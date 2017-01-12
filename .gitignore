@@ -2,7 +2,7 @@
 code/personal_junquan.ini
 
 # PyCharm files
-.idea/*.*
+.idea/**
 
 # OSX Files
 .DS_Store
@@ -23,3 +23,4 @@ __pycache__/
 
 # Spyder project settings
 .spyderproject
+.idea/
