@@ -1,10 +1,10 @@
 # App ID and Stuff
-personal_junquan.ini
+code/personal_junquan.ini
 
-# Pycharm files
+# PyCharm files
 .idea/*.*
 
-# Users Ignore Files
+# OSX Files
 .DS_Store
 
 # Byte-compiled / optimized / DLL files
