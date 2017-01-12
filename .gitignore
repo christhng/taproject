@@ -1,6 +1,8 @@
 # App ID and Stuff
 personal_junquan.ini
 
+# Pycharm files
+.idea/*.*
 
 # Users Ignore Files
 .DS_Store
