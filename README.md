@@ -1,4 +1,4 @@
-# Internet of Things Repo
+# Text Analytics Repo
 
 *Lets rock*
 
