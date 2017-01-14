@@ -1,5 +1,5 @@
-# App ID and Stuff
-code/personal_junquan.ini
+# auth config files
+auth/*.ini
 
 # PyCharm files
 .idea/**
