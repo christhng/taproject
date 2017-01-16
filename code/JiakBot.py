@@ -3,7 +3,6 @@ import json
 import random
 import logging
 from textblob import TextBlob
-
 # Set up
 # ---------------------------------------------------------
 config_file_path = '../config_app/app_config.ini'
@@ -16,11 +15,12 @@ config.read(config_file_path)
 greeting_path = config['file_path']['greeting_corpus']
 self_desc_path = config['file_path']['self_description_corpus']
 generic_resp_path = config['file_path']['generic_response_corpus']
+singlish_ending_path = config['file_path']['singlish_ending_corpus']
 
 # set up logger
 logging.basicConfig()
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 class JiakBot:
 
@@ -29,6 +29,9 @@ class JiakBot:
     __self_adj_desc = []
     __self_generic = []
     __generic_resp = []
+    __singlish_emphasis_ending = []
+    __singlish_question_ending = []
+    __singlish_reluctant_ending = []
 
     # Initializer
     def __init__(self):
@@ -42,21 +45,29 @@ class JiakBot:
             greeting_value = greeting[word][1]
             self.__greeting_dict[greeting_key] = greeting_value
 
-        # Sets up self descriptions vocabulary
+        # Set up self descriptions vocabulary
         self_desc_corpus = json.load(open(self_desc_path))
         self.__self_noun_desc = self_desc_corpus['noun']
         self.__self_adj_desc = self_desc_corpus['adjective']
         self.__self_adj_desc = self_desc_corpus['generic']
 
-        # Sets up generic responses
+        # Set up generic responses
         generic_resp_corpus = json.load(open(generic_resp_path))
         self.__generic_resp = generic_resp_corpus['generic']
+
+        # Set up Singlish ending
+        singlish_ending_corpus = json.load(open(singlish_ending_path))
+        self.__singlish_emphasis_ending = singlish_ending_corpus['emphasis']
+        self.__singlish_question_ending = singlish_ending_corpus['question']
+        self.__singlish_reluctant_ending = singlish_ending_corpus['reluctant']
 
     # Public function to respond
     # -----------------------------------------------------
     def respond(self, sentence):
         clean_text = self._preprocess_text(sentence)
         clean_text_blob = TextBlob(clean_text)
+
+        logger.info("Cleansed sentence: '%s'", clean_text_blob)
 
         pronoun, noun, adjective, verb = self._find_candidate_parts_of_speech(clean_text_blob)
 
@@ -70,11 +81,11 @@ class JiakBot:
         # attempt to construct a sensible response
         if not response:
             if not pronoun:
-                resp = random.choice(self.__generic_resp)
+                response = random.choice(self.__generic_resp)
             elif pronoun == 'I' and not verb:
-                resp = random.choice(self.__self_generic)
+                response = random.choice(self.__self_generic)
             else:
-                resp = self.construct_response(pronoun, noun, verb)
+                response = self._construct_response(pronoun, noun, verb)
 
         # Falls into nothing that bot recognize. return random stuff.
         if not response:
@@ -137,6 +148,7 @@ class JiakBot:
         """Pick a candidate verb for the sentence."""
         verb = None
         pos = None
+
         for word, part_of_speech in sent.pos_tags:
             if part_of_speech.startswith('VB'):  # This is a verb
                 verb = word
@@ -182,31 +194,28 @@ class JiakBot:
             if word.lower() in self.__greeting_dict.keys():
                 return random.choice(self.__greeting_dict[word.lower()])
 
+    def _starts_with_vowel(self,word):
+        """Check for pronoun compability -- 'a' vs. 'an'"""
+        return True if word[0] in 'aeiou' else False
+
     #continue here
-    def construct_response(self,pronoun, noun, verb):
+    def _construct_response(self,pronoun, noun, verb):
         """No special cases matched, so we're going to try to construct a full sentence that uses as much
         of the user's input as possible"""
-        resp = []
+        response = []
 
         if pronoun:
-            resp.append(pronoun)
+            response.append(pronoun)
 
-        # We always respond in the present tense, and the pronoun will always either be a passthrough
-        # from the user, or 'you' or 'I', in which case we might need to change the tense for some
-        # irregular verbs.
         if verb:
+            response.append('got try to')
             verb_word = verb[0]
-            if verb_word in ('be', 'am', 'is', "'m"):  # This would be an excellent place to use lemmas!
-                if pronoun.lower() == 'you':
-                    # The bot will always tell the person they aren't whatever they said they were
-                    resp.append("aren't really")
-                else:
-                    resp.append(verb_word)
+            response.append(verb_word)
+
         if noun:
-            pronoun = "an" if starts_with_vowel(noun) else "a"
-            resp.append(pronoun + " " + noun)
+            response.append(noun)
 
-        resp.append(random.choice(("tho", "bro", "lol", "bruh", "smh", "")))
+        response.append(random.choice(self.__singlish_question_ending))
 
-        return " ".join(resp)
+        return " ".join(response)
         # end

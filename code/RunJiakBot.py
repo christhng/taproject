@@ -1,7 +1,13 @@
 from JiakBot import JiakBot
 
-
 jiakbot = JiakBot()
-sentence = "I dont know where to find good prawn noodles"
+sentence = "I don't know where to find good prawn noodles"
 
-print(jiakbot.respond(sentence))
+run = True
+while run:
+    sentence = input('User: ')
+    if(sentence!='quit'):
+        print('Bot: ',jiakbot.respond(sentence))
+    else:
+        print('bye bye')
+        run=False

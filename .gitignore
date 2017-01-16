@@ -1,6 +1,6 @@
 # auth config files
 config_auth/*.ini
-config_app/*.ini
+config_app/personal.ini
 
 # PyCharm files
 .idea/**
@@ -14,3 +14,7 @@ config_app/*.ini
 # Spyder project settings
 .spyderproject
 .idea/
+
+# pycache
+code/__pycache__/*.*
+code/__pycache__/
