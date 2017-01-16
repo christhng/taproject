@@ -1,7 +1,7 @@
 import configparser # for reading ini files. https://docs.python.org/3/library/configparser.html
-import rauth    # for oauth
+import rauth    # for oauth1 / oauth2
 import pprint # for pretty printing in console
-import json
+import json # for processing json stuff
 
 # parameters
 # -------------------------------------------------------------------

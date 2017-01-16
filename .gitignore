@@ -1,5 +1,6 @@
 # auth config files
 config_auth/*.ini
+config_app/*.ini
 
 # PyCharm files
 .idea/**
