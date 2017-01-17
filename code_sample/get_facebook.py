@@ -18,21 +18,35 @@ pp = pprint.PrettyPrinter(indent=2)
 session = requests.session()
 
 try:
+    # args = {'access_token': user_access_token}
+    #
+    # response = session.request(method='GET',
+    #                            url='https://graph.facebook.com/search?q=Tai Hwa Pork Noodle&type=place',
+    #                            timeout=3000,
+    #                            params=args)
+    #
+    # pp.pprint(response.headers)
+    # pp.pprint(response.json())
+    #
+    # args = {'access_token': user_access_token,
+    #         'fields': 'id,checkins,location'}
+    #
+    # response = session.request(method='GET',
+    #                            url='https://graph.facebook.com/v2.8/153880607988046/',
+    #                            timeout=3000,
+    #                            params=args)
+    #
+    # pp.pprint(response.headers)
+    # pp.pprint(response.json())
+    #
     args = {'access_token': user_access_token}
 
-    response = session.request(method='GET',
-                               url='https://graph.facebook.com/search?q=Tai Hwa Pork Noodle&type=place',
-                               timeout=5,
-                               params=args)
-
-    pp.pprint(response.headers)
-    pp.pprint(response.json())
-
-    args = {'access_token': user_access_token}
+    # albums
+    # tagged
 
     response = session.request(method='GET',
-                               url='https://graph.facebook.com/153880607988046/reviews',
-                               timeout=5,
+                               url='https://graph.facebook.com/v2.8/1644972775731429/tagged/',
+                               timeout=3000,
                                params=args)
 
     pp.pprint(response.headers)
