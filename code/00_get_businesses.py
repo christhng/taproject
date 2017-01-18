@@ -1,5 +1,4 @@
 import configparser # for reading ini files. https://docs.python.org/3/library/configparser.html
-import rauth    # for oauth1 / oauth2
 import pprint # for pretty printing in console
 import json # for processing json stuff
 import requests
@@ -23,10 +22,6 @@ config_file_path = '../config_auth/auth.ini'
 
 # main code
 # -------------------------------------------------------------------
-# function to decode oauth data
-def oauth_decode(data):
-    new_data = data.decode("utf-8", "strict")
-    return json.loads(new_data)
 
 # Read in the config in the auth files
 config = configparser.ConfigParser()
@@ -34,8 +29,6 @@ config.read(config_file_path)
 
 client_id=config['yelp']['client_id']
 client_secret=config['yelp']['client_secret']
-access_token_key = config['yelp']['access_token_key']
-access_token_secret = config['yelp']['access_token_secret']
 
 # declare pretty printer for pretty printing the results
 pp = pprint.PrettyPrinter()
@@ -79,7 +72,6 @@ for term in terms:
 
             print('biz id:%s\nname: %s\n%s\n%s\n%s\n%s' % (biz_id,biz_name,biz_categories,biz_rating,biz_lat,biz_lng))
             print('---------------------------------------')
-
 
             # append to list
 
