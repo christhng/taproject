@@ -4,6 +4,9 @@
 * How to Build a Chatbot [link] (https://apps.worldwritable.com/tutorials/chatbot/)
 * Ultimate Guide to Leveraging NLP & Machine Learning for your Chatbot [link] (https://chatbotslife.com/ultimate-guide-to-leveraging-nlp-machine-learning-for-you-chatbot-531ff2dd870c#.azlcnkgfm)
 
+### SQLite
+* DB Browser for SQLite [link](http://sqlitebrowser.org/)
+
 ### Git workflow
 * Git Workflow [here] (https://www.atlassian.com/git/tutorials/comparing-workflows/centralized-workflow)
 * We are probably following the centralized workflow.

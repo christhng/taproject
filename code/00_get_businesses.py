@@ -1,19 +1,30 @@
 import configparser # for reading ini files. https://docs.python.org/3/library/configparser.html
 import pprint # for pretty printing in console
 import json # for processing json stuff
-import requests
+import requests # for firing off requests
+import time # for rate limiting
+import logging # for messages. better than print.
+import sqlite3 # for writing records to db
 
 # parameters
 # -------------------------------------------------------------------
-terms = ['food'] # ,restaurants indicates what to search for
-locations = ['raffles place'] # indicates the neighbourhood to search
+terms = ['food','restaurants'] # ,restaurants indicates what to search for
+locations = ['dhoby ghaut'] #city hall, raffles place, bras basah, dhoby ghaut # indicates the neighbourhood to search
 lat = [] # to be used if locations are not specified
 lng = [] # to be used if locations are not specified
 radius = 10000 # radius in meters (max is 40000)
 limit = 50 # number of results to return with each call. to be used with offset.
-offset = 0 # Offset the list of returned business results by this amount. max business from endpoint is 1000
 
 # reference here: https://www.yelp.com.sg/developers/documentation/v3/business_search
+
+# for keeping track of the records received
+max_records = 1000
+total_records_retrieved = 0
+
+# set up logger
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel(logging.WARNING)
 
 # file locations
 # -------------------------------------------------------------------
@@ -46,35 +57,82 @@ url = 'https://api.yelp.com/v3/businesses/search'
 headers = {'Authorization': 'bearer %s' % access_token}
 
 # search parameters for each term ... search each location
+results = []
+
 for term in terms:
 
     for location in locations:
 
-        # set the parameters
-        params = {}
-        params['term'] = term
-        params['location'] = location
-        params['limit'] = 10
+        print('Retrieving ... %s | %s' % (term, location))
 
-        # get the response
-        response = requests.get(url=url, params=params, headers=headers)
-        parsed = response.json()
-        businesses = parsed['businesses']
+        curr_count = 0
+        offset = 0
 
-        # get each business
-        for biz in businesses:
-            biz_id = biz['id']
-            biz_name = biz['name']
-            biz_categories = "|".join([d['title'] for d in biz['categories']])
-            biz_rating = biz['rating']
-            biz_lat = biz['coordinates']['latitude']
-            biz_lng = biz['coordinates']['longitude']
+        # retrieves records until the maximum we specify earlier
+        while curr_count < max_records:
 
-            print('biz id:%s\nname: %s\n%s\n%s\n%s\n%s' % (biz_id,biz_name,biz_categories,biz_rating,biz_lat,biz_lng))
-            print('---------------------------------------')
+            # set the parameters
+            params = {}
+            params['term'] = term
+            params['location'] = location
+            params['limit'] = limit
+            params['offset'] = offset
 
-            # append to list
+            # get the response
+            response = requests.get(url=url, params=params, headers=headers)
+            parsed = response.json()
+            available_records = parsed['total']
+            businesses = parsed['businesses']
+
+            logger.info('Requesting for ' + str(params))
+            logger.info('Available records for biz: ' + str(available_records))
+            logger.info('Raw response ' + str(parsed))
+
+            # if available is less than max, set it to available
+            if available_records < max_records:
+                max_records = available_records
+
+            # get each business
+            for biz in businesses:
+                biz_id = biz['id']
+                biz_name = biz['name']
+                biz_categories = "|".join([d['title'] for d in biz['categories']])
+                biz_rating = biz['rating']
+                biz_lat = biz['coordinates']['latitude']
+                biz_lng = biz['coordinates']['longitude']
+
+                logger.debug('biz id:%s\nname: %s\n%s\n%s\n%s\n%s' % (biz_id,biz_name,biz_categories,biz_rating,biz_lat,biz_lng))
+
+                # append to list
+                record = [biz_id,biz_name,biz_categories,biz_rating,biz_lat,biz_lng]
+                results.append(record)
+
+                # increment records received count
+                curr_count += 1
+                total_records_retrieved += 1
 
             # get next off set record
+            offset = offset + limit
 
-# write to csv
+            # rate limit the api calls
+            print('Records retrieved to date :', total_records_retrieved)
+
+            time.sleep(1)
+
+        time.sleep(30)
+
+    time.sleep(30)
+
+# connect and write to database
+conn = sqlite3.connect('../database/jiakbot.db')
+c = conn.cursor()
+
+# prepare and execute statement
+for record in results:
+    var_str = ', '.join('?' * len(record))
+    query_str = 'INSERT INTO businesses VALUES (%s);' % var_str
+    c.execute(query_str,record)
+
+conn.commit()
+conn.close()
+
