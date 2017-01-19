@@ -5,6 +5,7 @@ import re
 import json
 import pprint
 import logging
+import time
 
 # parameters
 # ---------------------------------------------------------
@@ -29,15 +30,21 @@ biz_ids = c.execute('SELECT DISTINCT biz_id FROM businesses;')
 
 # scraping code
 # ---------------------------------------------------------
-proceed = True
+results = []
 
 # for each biz_id scrape the reviews
 for biz_id in biz_ids:
 
+    biz_id = biz_id[0]
     page_start = 0
-    biz_id = 'tai-hwa-pork-noodle-singapore'
+    retry_count = 0
+    prev_reviews_returned = 0
 
-    while proceed:
+    print('Retrieving Business id: ', biz_id)
+
+    while True:
+
+        print('Retriving from page start = ', page_start)
 
         # set up url to crawl
         if page_start == 0:
@@ -46,7 +53,7 @@ for biz_id in biz_ids:
             url = base_url + biz_id + page_param + str(page_start)
 
         # get the content
-        raw_html = urlopen(url).read()
+        raw_html = urlopen(url, timeout=15).read()
         soup = BeautifulSoup(raw_html, 'html.parser')
 
         # check for whoops message (indicates no more reviews)
@@ -54,16 +61,44 @@ for biz_id in biz_ids:
 
         # if whoops message is found, proceed with the next biz_id
         if len(whoops_msg) > 0:
-            break
+            print('Detected Whoops message')
+            time.sleep(10)
+
+            if page_start <= page_increment and retry_count < 3 \
+                    and (prev_reviews_returned == 0 or prev_reviews_returned == 20):
+                retry_count += 1
+                print('Retrying ... Retry count: ', retry_count)
+                continue
+            else:
+                break
 
         # else get the reviews
         else:
-            raw_reviews = soup.find_all("script", type="application/ld+json")
-            for r in raw_reviews:
-                j = json.loads(r.get_text().strip())
+            raw = soup.find_all("script", type="application/ld+json")
+            parsed = json.loads(raw[0].get_text().strip())
+            reviews = parsed['review']
 
-                pp.pprint(j)
+            prev_reviews_returned = len(reviews)
 
+            # check if any results are returned
+            for review in reviews:
+                author = review['author']
+                published = review['datePublished']
+                rating = review['reviewRating']['ratingValue']
+                desc = review['description'].replace('\n', ' ')
 
-        break
+                print('Author: %s | Published: %s | Rating %d | Desc: %s' % (author, published, rating, desc))
+
+                record = [author, published, rating, desc]
+                results.append(record)
+
+            # commit the results for the business
+            conn.executemany('INSERT INTO reviews VALUES (?,?,?,?)', results)
+            conn.commit()
+
+            # increment the page and start the next retrieval
+            page_start += page_increment
+
+            time.sleep(5)
+
 conn.close()
