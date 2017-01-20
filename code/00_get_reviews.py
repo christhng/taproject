@@ -1,14 +1,19 @@
 from bs4 import BeautifulSoup
-from urllib.request import urlopen
+from urllib.request import urlopen,urlparse
+from urllib.parse import quote
+
 import sqlite3
 import re
 import json
 import pprint
 import logging
 import time
+import configparser
 
 # parameters
 # ---------------------------------------------------------
+
+config_file_path='../config_app/app_config.ini'
 db_path = '../database/jiakbot.db'
 base_url = 'https://www.yelp.com.sg/biz/'
 page_param = '?start='
@@ -26,33 +31,43 @@ conn = sqlite3.connect(db_path)
 c = conn.cursor()
 
 # get the existing biz_ids from database
-biz_ids = c.execute('SELECT DISTINCT biz_id FROM businesses;')
+config = configparser.ConfigParser()
+config.read(config_file_path)
+progress = config['scraper']['progress']
+limit = config['scraper']['limit']
+
+# get all biz ids
+c.execute('SELECT DISTINCT biz_id FROM businesses LIMIT ' + limit + ' OFFSET ' + progress + ';')
+biz_ids = c.fetchall()
 
 # scraping code
 # ---------------------------------------------------------
-results = []
+biz_id_count = 0
 
 # for each biz_id scrape the reviews
 for biz_id in biz_ids:
 
     biz_id = biz_id[0]
+
     page_start = 0
     retry_count = 0
     prev_reviews_returned = 0
-
-    print('Retrieving Business id: ', biz_id)
+    biz_id_count += 1
+    print('Retrieving  # %s Business id: %s' %(biz_id_count, biz_id))
 
     while True:
 
-        print('Retriving from page start = ', page_start)
+        results = []
+        print('Retrieving from page start = ', page_start)
 
         # set up url to crawl
         if page_start == 0:
-            url = base_url + biz_id
+            url = base_url + quote(biz_id)
         else:
-            url = base_url + biz_id + page_param + str(page_start)
+            url = base_url + quote(biz_id) + page_param + str(page_start)
 
         # get the content
+        print('Getting from URL: ', url)
         raw_html = urlopen(url, timeout=15).read()
         soup = BeautifulSoup(raw_html, 'html.parser')
 
@@ -79,8 +94,9 @@ for biz_id in biz_ids:
             reviews = parsed['review']
 
             prev_reviews_returned = len(reviews)
+            print('Previous reviews returned: ',prev_reviews_returned)
 
-            # check if any results are returned
+            # parse each review text
             for review in reviews:
                 author = review['author']
                 published = review['datePublished']
@@ -89,16 +105,28 @@ for biz_id in biz_ids:
 
                 print('Author: %s | Published: %s | Rating %d | Desc: %s' % (author, published, rating, desc))
 
-                record = [author, published, rating, desc]
+                record = [biz_id, author, published, rating, desc]
                 results.append(record)
 
             # commit the results for the business
-            conn.executemany('INSERT INTO reviews VALUES (?,?,?,?)', results)
+            c.executemany('INSERT INTO reviews VALUES (?,?,?,?,?)', results)
             conn.commit()
 
             # increment the page and start the next retrieval
             page_start += page_increment
 
-            time.sleep(5)
+            time.sleep(10)
+
+            # break prev_reviews are already less than 20
+            # no need to try next page
+            if prev_reviews_returned < 20: break
+
+
 
 conn.close()
+
+# Writing our configuration file to 'example.cfg'
+with open(config_file_path, 'w') as configfile:
+    v = int(progress)+int(limit)
+    config.set('scraper','progress',str(v))
+    config.write(configfile)
