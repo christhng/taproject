@@ -115,7 +115,7 @@ for biz_id in biz_ids:
             # increment the page and start the next retrieval
             page_start += page_increment
 
-            time.sleep(15)
+            time.sleep(10)
 
             # break prev_reviews are already less than 20
             # no need to try next page
