@@ -3,6 +3,7 @@
 ### Chatbots
 * How to Build a Chatbot [link] (https://apps.worldwritable.com/tutorials/chatbot/)
 * Ultimate Guide to Leveraging NLP & Machine Learning for your Chatbot [link] (https://chatbotslife.com/ultimate-guide-to-leveraging-nlp-machine-learning-for-you-chatbot-531ff2dd870c#.azlcnkgfm)
+* Python Chatterbot [link] (https://github.com/gunthercox/ChatterBot)
 
 ### SQLite
 * DB Browser for SQLite [link](http://sqlitebrowser.org/)
