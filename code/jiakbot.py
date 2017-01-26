@@ -208,7 +208,7 @@ class JiakBot:
             response.append(pronoun)
 
         if verb:
-            response.append('got try to')
+            response.append('got')
             verb_word = verb[0]
             response.append(verb_word)
 
