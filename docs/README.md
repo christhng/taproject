@@ -1,6 +1,4 @@
 **for html5 presentations and code documentation**
-# Rough Architecture
-
 
 # Installing Dependencies
 
