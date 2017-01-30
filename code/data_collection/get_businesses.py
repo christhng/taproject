@@ -130,7 +130,7 @@ c = conn.cursor()
 # prepare and execute statement
 for record in results:
     var_str = ', '.join('?' * len(record))
-    query_str = 'INSERT INTO businesses VALUES (%s);' % var_str
+    query_str = 'INSERT INTO stg_businesses VALUES (%s);' % var_str
     c.execute(query_str,record)
 
 conn.commit()

@@ -37,7 +37,7 @@ progress = config['scraper']['progress']
 limit = config['scraper']['limit']
 
 # get all biz ids
-c.execute('SELECT DISTINCT biz_id FROM businesses LIMIT ' + limit + ' OFFSET ' + progress + ';')
+c.execute('SELECT DISTINCT biz_id FROM stg_businesses LIMIT ' + limit + ' OFFSET ' + progress + ';')
 biz_ids = c.fetchall()
 
 # scraping code
@@ -109,7 +109,7 @@ for biz_id in biz_ids:
                 results.append(record)
 
             # commit the results for the business
-            c.executemany('INSERT INTO reviews VALUES (?,?,?,?,?)', results)
+            c.executemany('INSERT INTO stg_reviews VALUES (?,?,?,?,?)', results)
             conn.commit()
 
             # increment the page and start the next retrieval
