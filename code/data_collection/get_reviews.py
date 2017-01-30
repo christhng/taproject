@@ -121,8 +121,6 @@ for biz_id in biz_ids:
             # no need to try next page
             if prev_reviews_returned < 20: break
 
-
-
 conn.close()
 
 # Writing our configuration file to 'example.cfg'
