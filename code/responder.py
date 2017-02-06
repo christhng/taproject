@@ -24,7 +24,7 @@ class TopicRetriever:
             2) bot reference
             3) user reference
         """
-        assert isinstance(parsed_dict, dict)
+        assert isinstance(self.parsed_dict, dict)
 
         greetings = {}
         for g in self.greeting_corpus:
