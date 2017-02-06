@@ -1,17 +1,123 @@
-#import your libraries
-from retriever import Retriever
 import json
 import random
+from retriever import Retriever
+
+
+class TopicRetriever:
+    """Topic parser class
+
+    Attributes:
+        parsed_dict (dict) - dictionary of parsed words from Parser object
+    """
+    bot_corpus = ['you', 'jiakbot', 'bot']
+    user_corpus = ['i', 'me', 'i\'m', 'im', 'mine']
+    greeting_corpus = json.load(open('../corpus/greetings.json'))['greetings']
+
+    def __init__(self, parsed_dict):
+        self.parsed_dict = parsed_dict
+
+    def retrieve(self):
+        """Retrieve topic in order of importance.
+
+        Order of importance:
+            1) greeting
+            2) bot reference
+            3) user reference
+        """
+        greetings = {}
+        for g in self.greeting_corpus:
+            greetings[g[0].lower()] = g[1]
+        for key in greetings.keys():
+            if key in parsed['tokens']:
+                return 'greeting'
+
+        retrieve_bot_ref = [w for w in self.bot_corpus
+                            if w in parsed_dict['pronouns'] or
+                            w in parsed_dict['nouns']]
+        if retrieve_bot_ref:
+            return 'bot'
+
+        retrieve_user_ref = [w for w in self.user_corpus
+                            if w in parsed_dict['pronouns']]
+        if retrieve_user_ref:
+            return 'user'
+
+
+class AlternativeResponder:
+    """Alternative response class
+
+    Attributes:
+        parsed_topic - A string representing the alternative topic of interest
+        based on the parsed sentence
+        topics - List of available topics
+    """
+    topics = ['bot', 'user', 'greeting']
+    responses = {
+        'bot': 'You are talking about me',
+        'user': 'You are talking about yourself',
+        'greeting': 'Hello back',
+    }
+
+    def __init__(self, parsed_topic):
+        """Return AlternativeResponder object which will respond to
+        a particular topic
+
+        Available topics:
+            bot - about the bot itself
+            user - about the user
+            greeting - general greetings
+        """
+        self.parsed_topic = parsed_topic
+
+    def check_topic(self):
+        """Checks if parsed_topic argument is in list of available topics"""
+        if self.parsed_topic in self.topics:
+            return True
+        return False
+
+    def construct(self):
+        """Constructs alternative response
+
+        Arguments:
+            parsed_topic (string) - string which represents a topic that the
+            bot can comprehend
+        """
+        if self.check_topic():
+            response = responses[self.parsed_topic]
+        else:
+            response = "I don't quite understand you"
+        return response
+
 
 class Responder:
+    """Reponse constructor class
+
+    Steps taken to create a response:
+        1) Check if results are retrievable
+        2a) If retrievable, Retrieve results from Retriever object
+            2a-1) Check that there is content retrieved in results dictionary
+            2a-2) Return response accordingly
+        2b) If not retrievable, use AlternativeResponder object to generate
+        response based on topic
+    """
 
     def check_retrieve(self, result):
+        """Checks whether response dict is empty
+
+        Arguments:
+            result (dict) - results retrieved using Retriever object
+        """
         for key in result.keys():
             if not result[key]:
-                return False    # If result[key] is empty
+                return False # If result[key] is empty
         return True
 
     def response_constructor(self, result):
+        """Constructs response
+
+        Arguments:
+            result (dict) - results retrieved using Retriever object
+        """
         # ensure dict is passed
         if isinstance(result, dict):
             # convert key-value pairs to variables
@@ -25,80 +131,43 @@ class Responder:
             ''' % (biz_name, biz_location, category, biz_name, comment)
             return response
         else:
-            print("Response constructor only accepts %s \
+            msg = "Response constructor only accepts %s \
             argument. Instead, %s was used." % (str(type(dict())),
-                                                str(type(result))))
+                                                str(type(result)))
+            raise TypeError(msg)
 
-    def prepare_reponse(self,state,parsed):
+    def retrievable_response(self, state, parsed):
+        """Response generated from a result that was successfully
+        retrieved using Retriever
 
-        response = ''
+        Arguments:
+            state (dict) - Dictionary passed from StateMachine object
+            parsed (dict) - Dictionary passed from Parser object
+        """
+        retriever = Retriever()
+        result = retriever.get_result(state, parsed)
+        # check result is populated
+        if self.check_retrieve(result):
+            # construct positive response
+            response = self.response_constructor(result)
+        else:
+            # construct negative response
+            response = 'Sorry, I wasn\'t able to find anything relevant! :('
+        # prepare response
+        return response
 
+    def prepare_reponse(self, state, parsed):
+        """Response controller
+
+        Arguments:
+            state (dict) - Dictionary passed from StateMachine object
+            parsed (dict) - Dictionary passed from Parser object
+        """
         # if retrievable go retrieve the biz name, location
         # and 1 line of review
-        if state['retrievable'] == True:
-            retriever = Retriever()
-            result = retriever.get_result(state, parsed)
-            # check result is populated
-            if self.check_retrieve(result):
-                # construct positive response
-                response = self.response_constructor(result)
-            else:
-                # construct negative response
-                response = 'Sorry, I wasn\'t able to find anything relevant! :('
-            # prepare response
-            return response
+        if state['retrievable'] is True:
+            response = self.retrievable_response(state, parsed)
         else:
-            # flags to indicate the stuff the user just input
-            about_bot = False
-            about_user = False
-            about_greeting = False
-            about_vague = False
-
-            # Analyze the content and sets the appropriate flag
-
-            # Hard code lists of references. Eventually can use text
-            # classification to sieve out reference classes (bot, greeting etc.)
-
-            # 1) about_bot
-            bot_corpus = ['you', 'jiakbot', 'bot'] # words referring to bot
-            retrieve_bot_ref = [w for w in bot_list if w in parsed['pronouns'] or w in parsed['nouns']]
-            if retrieve_bot_ref:
-                about_bot = True
-
-            # 2) about_user
-            me_corpus = ['i', 'me', 'i\'m', 'im', 'mine']
-            retrieve_me_ref = [w for w in me_list if w in parsed['pronouns']]
-            if retrieve_me_ref:
-                about_user = True
-
-            # 3) about_greeting
-            greeting_corpus = json.load(open('../corpus/greetings.json'))
-            greeting_corpus = greeting_corpus['greetings']
-            greetings = {}
-            for g in greeting_corpus:
-                greetings[g[0].lower()] = g[1]
-            for key in greetings.keys():
-                if key in parsed['tokens']:
-                    about_greeting = True
-
-            # 4) about_vague
-
-
-        # if talking about bot eg. 'you are an idiot'
-        if about_bot:
-            # prepare the response
-            response = 'You are talking about me'
-
-        elif about_user:
-            response = 'You are talking about yourself'
-
-        elif about_greeting:
-            response = 'Hello back'
-
-        elif about_vague:
-            response = 'Can you elaborate more about _____ '
-
-        else:
-            response = "I don't quite understand you"
-
+            topic = TopicRetriever(parsed_dict=parsed).retrieve()
+            response = AlternativeResponder(parsed_topic=topic).construct()
         return response
