@@ -24,21 +24,23 @@ class TopicRetriever:
             2) bot reference
             3) user reference
         """
+        assert isinstance(parsed_dict, dict)
+
         greetings = {}
         for g in self.greeting_corpus:
             greetings[g[0].lower()] = g[1]
         for key in greetings.keys():
-            if key in parsed['tokens']:
+            if key in self.parsed_dict['tokens']:
                 return 'greeting'
 
         retrieve_bot_ref = [w for w in self.bot_corpus
-                            if w in parsed_dict['pronouns'] or
-                            w in parsed_dict['nouns']]
+                            if w in self.parsed_dict['pronouns'] or
+                            w in self.parsed_dict['nouns']]
         if retrieve_bot_ref:
             return 'bot'
 
         retrieve_user_ref = [w for w in self.user_corpus
-                            if w in parsed_dict['pronouns']]
+                            if w in self.parsed_dict['pronouns']]
         if retrieve_user_ref:
             return 'user'
 
