@@ -3,6 +3,11 @@ import random
 from retriever import Retriever
 
 
+# TODO: Detect previous and current state from parsed_dict
+# e.g. 'I want to eat rice at Raffles' -> 'What else is nice there?'
+# 'There' refers to a location (refer to previous state in parsed_dict)
+
+
 class TopicRetriever:
     """Topic parser class
 
