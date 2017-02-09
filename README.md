@@ -16,11 +16,11 @@
 
 ## Task List
 
-1) parser (kah ling)
-2) responder (thomas)
-3) retriever (chris)
-4) state_machine (wesley)
-5) integration (jq)
-6) database prep / statement-response pairs (brij)                        
-7) proposal (all)
-8) report (all)
+1. parser (kah ling)
+2. responder (thomas)
+3. retriever (chris)
+4. state_machine (wesley)
+5. integration (jq)
+6. database prep / statement-response pairs (brij)                        
+7. proposal (all)
+8. report (all)
