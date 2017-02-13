@@ -20,7 +20,6 @@ class Parser:
         }
 
         #######################################################################
-
         # insert code to parse here
         tokens = word_tokenize(self)
         tokens_words_only = [w for w in tokens if re.search('^[a-z]+$', w)]
