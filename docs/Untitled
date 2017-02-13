@@ -1,0 +1,4 @@
+INSERT INTO foods (biz_id, food)
+SELECT sc.biz_id, sc.biz_category FROM stg_categories sc
+LEFT JOIN stg_mappings sm ON sc.biz_category=sm.biz_category
+WHERE sm.mapped_item='food';
