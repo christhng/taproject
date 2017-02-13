@@ -1,4 +1,6 @@
 # import relevant stuff here
+import nltk
+import re
 
 class Parser:
 
@@ -18,6 +20,12 @@ class Parser:
         #######################################################################
 
         # insert code to parse here
+        from nltk.tokenize import word_tokenize
+        tokens = word_tokenize(self)
+        tokens_words_only = [w for w in tokens if re.search('^[a-z]+$', w)]
+
+        from nltk import pos_tag
+        parsed_dict = pos_tag(tokens_words_only)
 
         #######################################################################
-        return parsed_dict
+    return parsed_dict
