@@ -1,18 +1,16 @@
 # Proposal
 
 ## Background
-* Working crowd often don't know where to eat
-* Interactively suggest places to eat
-* Use NLP techniques to build a chatbot
+The project was inspired from a common problem working class adults in the Singapore CBD faced - where and what to eat for lunch. This project aims to suggest places to eat through a chatbot, in order to provide an interactive user experience. The chatbot will be built using Natural Language Processing (NLP) techniques.
 
-## Motivation 
+## Motivation
 * lack of localized chatbot
 * hard to train chatbot using by creating the responses
 
 ## Potential Use Cases
 * Tie up with business to suggest business to users
 * provide some entertainment when choosing where to eat
-* customer service for businesses who signed up 
+* customer service for businesses who signed up
 
 ## Analytics Tasks
 Here we describe the analytics tasks involved in building the chatbot
@@ -24,8 +22,8 @@ Here we describe the analytics tasks involved in building the chatbot
 * Use of document retrieval to get the most relevant place to have lunch
 
 #### Topic Analysis
-* Reviews are used to train the bot to provide relevant responses. 
-* Each review is tied to a topic 
+* Reviews are used to train the bot to provide relevant responses.
+* Each review is tied to a topic
 
 ## Approach
 * Get the data (APIs and scraping)
@@ -36,12 +34,12 @@ Here we describe the analytics tasks involved in building the chatbot
 * Use information retrieval to get responses
 * Use generic grammar rules to construct responses
 
-## Data 
+## Data
 
 #### Data Preparation
 * web scraping
 * nlp processing (vector space)
-* training - topic modeling etc 
+* training - topic modeling etc
 
 #### Initial Exploration of Scraped Data
 * Some description and charts
@@ -57,8 +55,13 @@ Here we describe the analytics tasks involved in building the chatbot
 * parsing - tokenization
 * state machine - entity extraction
 * responder - construct responses
+    * The main Responder class handles all response construction.
+    * Points the flow in two main directions:
+        * Information retrieval from the database
+        * Construct an alternative response if a non-food query is detected
+    * The Responder class makes use of several other classes to handle greetings, and other non-food related topics that are detected in the conversation
 * retriever - information extraction
-* trainer/topic_finder - topic modeling 
+* trainer/topic_finder - topic modeling
 
 ### Database Diagram
 * insert database diagram
