@@ -1,5 +1,12 @@
 # script to prepare cuisine (c), food (f), place (p)
-# TODO - import from mappings
+
+# -----------------------------------------------------------------------------
+# *** IMPORTANT ***
+# before running this script
+# ensure that mapping.csv (prepared externally)
+# has been loaded into stg_mappings using applications
+# like DB Browser for SQLite
+# -----------------------------------------------------------------------------
 
 import sqlite3
 
