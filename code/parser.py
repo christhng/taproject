@@ -48,9 +48,9 @@ class Parser:
         stop_list = stopwords.words('english')
         parsed_dict['cleansed_text'] = [w for w in words if w not in stop_list]
 
-
         #######################################################################
         return parsed_dict
+
 
 p = Parser()
 output = p.parse_input('their quick brown fox jumped over our lazy dog slowly.')
