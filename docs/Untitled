@@ -1,4 +1,36 @@
-INSERT INTO foods (biz_id, food)
-SELECT sc.biz_id, sc.biz_category FROM stg_categories sc
-LEFT JOIN stg_mappings sm ON sc.biz_category=sm.biz_category
-WHERE sm.mapped_item='food';
+
+[1] Zecevic, A., Salmoni, A., Speechley, M., & Vandervoort, A. (2006). Defining a fall and reasons for falling: Comparisons among the views of seniors, health care providers, and the research literature. The Gerontologist, 46(3), 367-76.
+
+[2] Falls. Fact Sheet. (2016, September). Retrieved February 3, 2017, from http://www.who.int/mediacentre/factsheets/fs344/en/
+
+[3] Morris, E. V., & Isaacs, B. (1980). The prevention of falls in a geriatric hospital". Age and Ageing, 9,181-185.
+
+[4] Morse, J. (2008). Preventing Patient Falls, New York: Springer Publishing Company (2nd ed.)
+
+[5] Staggs, V. S., Davidson, J., Dunton, N., & Crosser, B. (2015). Challenges in Defining and Categorizing Falls on Diverse Unit Types: Lessons from Expansion of the NDNQI Falls Indicator. Journal of Nursing Care Quality, 30(2), 106–112.
+
+[6] Hanger, H., Wills, K., & Wilkinson, T. (2014). Classification of falls in stroke rehabilitation – not all falls are the same. Clinical Rehabilitation, 28(2), 183-195.
+
+[7] Alvord, L. (2015). Falls Assessment and Prevention Home, Hospital, and Extended Care: Plural Publishing, Inc. Plural Publishing.
+
+[8] Institute of Medicine Staff, Cassells, Berg, Cassells, Joseph S, & Berg, Robert L. (1990). Second Fifty Years: Promoting Health and Preventing Disability, National Academies Press. National Academies Press.
+
+[9] Isis M. S. et al. (2014). Risk factors for falls in hospitalized adult patients: An integrative review. Revista Da Escola De Enfermagem Da USP, 48(3), 540-554.
+
+[10] Evans, D., Hodgkinson, B., Lambert, L., & Wood, J. (2001). Falls risk factors in the hospital setting: A systematic review. International Journal of Nursing Practice, 7(1), 38-45.
+
+[11] Vieira, E., Freund-Heritage, R., & Da Costa, B. (2011). Risk factors for geriatric patient falls in rehabilitation hospital settings: A systematic review. Clinical Rehabilitation, 25(9), 788-799.
+
+[12] Evans, D., Hodgkinson, B., Lambert, L., & Wood, J. (2001). Falls risk factors in the hospital setting: A systematic review. International Journal of Nursing Practice, 7(1), 38-45.
+
+[13] David Oliver, Fergus Daly, Finbarr C. Martin, Marion E. T. McMurdo (2004); Risk factors and risk assessment tools for falls in hospital in-patients: a systematic review. Age Ageing 2004; 33 (2): 122-130.
+
+[14] Warrer, P., Hansen, E., Juhl‐Jensen, L., & Aagaard, L. (2012). Using text‐mining techniques in electronic patient records to identify ADRs from medicine use. British Journal of Clinical Pharmacology, 73(5), 674-684.
+
+[15] McCart, J., Berndt, D., Jarman, J., Finch, D., & Luther, S. (2013). Finding falls in ambulatory care clinical documents using statistical text mining. Journal of the American Medical Informatics Association, 20(5), 906-914.
+
+[16] Toyabe, S. I. (2012). Detecting inpatient falls by using natural language processing of electronic medical records. BMC health services research, 12(1), 448.
+
+[17] Luther, S. et al (2015). Improving Identification of Fall-Related Injuries in Ambulatory Care Using Statistical Text Mining. American Journal of Public Health, 105(6), 1168-1173.
+
+[18] Tremblay, M. C., Berndt, D. J., Luther, S. L., Foulis, P. R., & French, D. D. (2009). Identifying fall-related injuries: Text mining the electronic medical record. Information Technology and Management, 10(4), 253.
