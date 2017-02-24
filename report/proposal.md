@@ -64,7 +64,7 @@ Here we describe the analytics tasks involved in building the chatbot
         * Construct an alternative response if a non-food query is detected
     * The Responder class makes use of several other classes to handle greetings, and other non-food related topics that are detected in the conversation
 * retriever - information extraction
-   * The Retriever function is meant to query the database based on the data provided by the responder and return a relevant set of information for the Responder class to utilize
+   * The Retriever function is meant to query the database based on the data provided by the Responder and return a relevant set of information for the Responder class to utilize
    * The Retriever function conducts 4 main steps:
       * Simple SQL statements used to extract the related data from the database based on data (query) provided by Responder
       * Reference the tokens: Compare using cosine similarity to get most relevant statement
