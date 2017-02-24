@@ -11,6 +11,8 @@ The project was inspired from a common problem working class adults in the Singa
 * Tie up with business to suggest business to users
 * provide some entertainment when choosing where to eat
 * customer service for businesses who signed up
+* Generate revenue through advertisements within App
+* 
 
 ## Analytics Tasks
 Here we describe the analytics tasks involved in building the chatbot
@@ -32,6 +34,7 @@ Here we describe the analytics tasks involved in building the chatbot
 * Use part of speech tags to understand?
 * Use state machines to model the states
 * Use information retrieval to get responses
+* Use comparison model: cosine similarity to return relevant dictionary
 * Use generic grammar rules to construct responses
 
 ## Data
@@ -61,6 +64,12 @@ Here we describe the analytics tasks involved in building the chatbot
         * Construct an alternative response if a non-food query is detected
     * The Responder class makes use of several other classes to handle greetings, and other non-food related topics that are detected in the conversation
 * retriever - information extraction
+   * The Retriever function is meant to query the database based on the data provided by the responder and return a relevant set of information for the Responder class to utilize
+   * The Retriever function conducts 4 main steps:
+      * Simple SQL statements used to extract the related data from the database based on data (query) provided by Responder
+      * Reference the tokens: Compare using cosine similarity to get most relevant statement
+      * Convert set of statement(s) into dictionary
+      * Return dictionary to Responder class
 * trainer/topic_finder - topic modeling
 
 ### Database Diagram
