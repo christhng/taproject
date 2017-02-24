@@ -8,11 +8,11 @@ The project was inspired from a common problem working class adults in the Singa
 * hard to train chatbot using by creating the responses
 
 ## Potential Use Cases
-* Tie up with business to suggest business to users
-* provide some entertainment when choosing where to eat
-* customer service for businesses who signed up
+* Tie up with business to provide exposure as well as a source of revenue (e.g. incentives/discounts) 
+* Users can subscribe to this service to receive information about trending restaurants based on their preferences
+* Provide some entertainment (localized humour) when choosing where to eat
+* Provide other information about food location by complementing current data with other data sources such as Google visitor information (e.g. Popular time, live visits, duration)
 * Generate revenue through advertisements within App
-* 
 
 ## Analytics Tasks
 Here we describe the analytics tasks involved in building the chatbot
