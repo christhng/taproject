@@ -1,11 +1,11 @@
 # Proposal
 
 ## Background
-The project was inspired from a common problem working class adults in the Singapore CBD faced - where and what to eat for lunch. This project aims to suggest places to eat through a chatbot, in order to provide an interactive user experience. The chatbot will be built using Natural Language Processing (NLP) techniques.
+The project was inspired from a common problem working class adults in Singapore's Central Business District (CBD) faced - where and what to eat for lunch. This project aims to suggest places to eat through a chatbot, in order to provide an interactive user experience. The chatbot will be built using Natural Language Processing (NLP) techniques.
 
 ## Motivation
-* lack of localized chatbot
-* hard to train chatbot using by creating the responses
+Food is a major part of Singapore's culture. Daily, most Singaporeans look forward to their meal times as a form of relaxation and enjoyment. However, given the numerous food choices and a lack of time to research on where/what to eat, most people have difficulty deciding their meals.
+Chatbots, through NLP, is an attractive method of human-computer interaction due to the ease of usage. The fact that chatbots are not widely used in Singapore makes it an obvious primary choice for us to develop one which is specific to Singapore. Furthermore, creating relevant and appropriate response is a tough but critical component to a successful chatbot. Hence, we decided to take on the challenge of developing one.
 
 ## Potential Use Cases
 * Tie up with business to provide exposure as well as a source of revenue (e.g. incentives/discounts) 
