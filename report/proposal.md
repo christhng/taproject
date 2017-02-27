@@ -64,7 +64,7 @@ Businesses | Reviews | Statements | Cuisines | Foods | Places
 2590 | 17235 | 171906 | 1740 | 1088 | 985
 
 #### Database Diagram
-* insert database diagram
+![diagram](img_proposal/db.jpg)
 
 ## Evaluation of Chatbot's Performance
 While typical measures such as precision, recall and f-score are useful in evaluating the quality of classifiers 
