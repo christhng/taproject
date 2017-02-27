@@ -22,15 +22,46 @@ Here we describe the analytics tasks involved in building the chatbot. The chatb
 
 **Topic Analysis** - We aim to discover themes in reviews and use that information to further make the response more relevant and to aid the document retrieval task. The topic most probable as determined by the words in the user's input will serve as filter to filter reviews on the topic. The second filter will be to select a statement from the filtered reviews based on distance measures such as cosine similarity and Jaccard. 
 
-## Approach (Brij)
-* Get the data (APIs and scraping)
-* Prepare the corpus
-* Prepare statement / response pairs?
-* Use part of speech tags to understand?
-* Use state machines to model the states
-* Use information retrieval to get responses
-* Use comparison model: cosine similarity to return relevant dictionary
-* Use generic grammar rules to construct responses
+## Approach 
+Training:
+ 1: Gather restaurants reviews, businesses, cuisines from Yelp
+	* use api and web scraping to scrape all reviews about all restaurants in Singapore 
+	* Each review is written and stored in a separate file that is later used for further processing
+
+2: Prepare the corpus
+	* Perform tokenization, stemming and tf idf weighting on each doc
+	* Apply vector space modeling on the docs and come up with a dictionary
+	* Create a list of “generic responses”, “greetings”, “about_user” and “about_bot”, “self description” and “singlish emphasis” dictionary 
+	* Persist a structure of reviews and related attributes in a DB  for easy and consistent lookup
+
+3: Prepare statement/response pairs( Topic Modeling )
+	* Apply k_means clustering and perform elbow analysis to come up with an optimal number of clusters
+	* Use LDA( Latent Dirichlet Allocation ) with an optimal number of topics/doc as identified in above step and come up with a distribution of topics and subsequently most likely topic that describe each doc/review
+
+Live:
+1: Input parsing
+	* Every statement entered by the user is tokenized, lemmatized.
+	* A dictionary of POS tags is created for each word in the statement
+
+2: State machine to model the states
+	* A state machine will hold the state of the response at any point. A state of the response is very domain specific and used to understand the context of communication and information retrieval.
+	* A state machine will hold the following attributes at any point:
+		        'retrievable':  indicates whether there is enough info to retrieve
+		        'cuisines'
+		        'foods' 
+		        'location'
+		        'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates 						populated	
+		        'current_state': [0,0,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
+	* Next response created will depend on the input statement and previous state of the machine
+	
+3: Information Retriever(IR) to get response
+	* IR takes “state” as an input and finds the most relevant “business” stored in the DB during training phase.
+	* IR employs comparison methods like “Jaccard”, “Cosine” or “Levenshtein” on the processed corpus in the DB to come up with the relevant info.
+
+4: Responder to respond to the input statement/query of user
+	* Responder use the state machine and IR service to construct appropriate response to the user statement.
+    * Responder starts by performing a dictionary lookup of the greetings, “about_bot” or “about_user” dicts along with the POS tags of each word to identify the context and topic of the response
+    * If none of above topic, an alternative response is constructed. Responder creates a state in the state machine and employs “IR” to find the find the most likely topic and business from the list of corpus topics generated during training phase.
 
 ## About the Data
 
