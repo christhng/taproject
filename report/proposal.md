@@ -66,9 +66,17 @@ Businesses | Reviews | Statements | Cuisines | Foods | Places
 #### Database Diagram
 * insert database diagram
 
+## Evaluation of Chatbot's Performance
+While typical measures such as precision, recall and f-score are useful in evaluating the quality of classifiers 
+where data can be split into training and test sets, evaluating the quality of a chatbot can be challenging. The 
+Turing Test, used by the Loebner Prize is one measure where if the chatbot's responses cannot be distinguished from a human, it may be considered a good chatbot. 
+ 
+For the purpose of this project, we propose using a manually constructed list of 100 inputs consisting of greetings, questions and random comments be used to solicit responses from the chatbot. The responses will then be interpreted by a human with scores of 0,0.5 and 1. 1 indicates a suitable response, 0.5 indicates a response that might be related and 0 indicates a unrelated response. We aim to maximize the score of the chatbot given these 100 inputs for this project. 
+
 ## References
 [1] AluxBot - A Chatbot that Encourages the Care for the Environment. (2016). International Journal of Computer Science Issues, 13(6), 120-123.
 
 [2] Yi Fei Wang, & Stephen Petrina. (2013). Using Learning Analytics to Understand the Design of an Intelligent Language Tutor – Chatbot Lucy. International Journal of Advanced Computer Science and Applications, 4(11), 124-131.
 
 [3] Chatbots Raise Questions About the Future of Customer Service. (2016, April 27). PR Newswire, p. PR Newswire, Apr 27, 2016.
+
