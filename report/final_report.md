@@ -24,23 +24,36 @@ Chatbots, through Natural Language Processing (NLP), is an attractive method of 
 * include architecture diagram
 
 #### Python Classes
-* jiakbot - main bot class
-* parsing - tokenization
-* state machine - entity extraction
-* responder - construct responses
-    * The main Responder class handles all response construction.
-    * Points the flow in two main directions:
-        * Information retrieval from the database
+**jiakbot**
+* main bot class
+
+**Parsing**
+* insert content
+
+**State Machine** 
+* The State Machine class is meant to keep track of the context of a conversation, in particular:
+    * Where the user want to eat or the user's current location
+    * What kind of food cuisine the user is looking for
+    * What sort of food the user is looking for
+* The State Machine relays the state information and/or status to the Responder to either prompt the user for more information and/or provide the user with a list of recommendations retrieved from the business and food database.
+
+**Responder**
+* The main Responder class handles all response construction.
+* Points the flow in two main directions:
+    * Information retrieval from the database
         * Construct an alternative response if a non-food query is detected
     * The Responder class makes use of several other classes to handle greetings, and other non-food related topics that are detected in the conversation
-* retriever - information extraction
-   * The Retriever function is meant to query the database based on the data provided by the Responder and return a relevant set of information for the Responder class to utilize
-   * The Retriever function conducts 4 main steps:
-      * Simple SQL statements used to extract the related data from the database based on data (query) provided by Responder
-      * Reference the tokens: Compare using cosine similarity to get most relevant statement
-      * Convert set of statement(s) into dictionary
-      * Return dictionary to Responder class
-* trainer/topic_finder - topic modeling
+
+**Retriever**
+* The Retriever function is meant to query the database based on the data provided by the Responder and return a relevant set of information for the Responder class to utilize
+* The Retriever function conducts 4 main steps:
+    * Simple SQL statements used to extract the related data from the database based on data (query) provided by Responder
+    * Reference the tokens: Compare using cosine similarity to get most relevant statement 
+    * Convert set of statement(s) into dictionary
+    * Return dictionary to Responder class
+
+**Trainer/ Topic_finder**
+* insert content 
 
 ## Results and Findings
 * Defining good response?

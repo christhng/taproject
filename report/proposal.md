@@ -72,28 +72,3 @@ Businesses | Reviews | Statements | Cuisines | Foods | Places
 [2] Yi Fei Wang, & Stephen Petrina. (2013). Using Learning Analytics to Understand the Design of an Intelligent Language Tutor – Chatbot Lucy. International Journal of Advanced Computer Science and Applications, 4(11), 124-131.
 
 [3] Chatbots Raise Questions About the Future of Customer Service. (2016, April 27). PR Newswire, p. PR Newswire, Apr 27, 2016.
-
-## Proposed Bot Architecture 
-
-* to be included if there is space. if not leave it for final report
-
-### Python Classes
-* jiakbot - main bot class
-* parsing - tokenization
-* state machine - entity extraction
-* responder - construct responses
-    * The main Responder class handles all response construction.
-    * Points the flow in two main directions:
-        * Information retrieval from the database
-        * Construct an alternative response if a non-food query is detected
-    * The Responder class makes use of several other classes to handle greetings, and other non-food related topics that are detected in the conversation
-* retriever - information extraction
-   * The Retriever function is meant to query the database based on the data provided by the Responder and return a relevant set of information for the Responder class to utilize
-   * The Retriever function conducts 4 main steps:
-      * Simple SQL statements used to extract the related data from the database based on data (query) provided by Responder
-      * Reference the tokens: Compare using cosine similarity to get most relevant statement
-      * Convert set of statement(s) into dictionary
-      * Return dictionary to Responder class
-* trainer/topic_finder - topic modeling
-
-
