@@ -23,4 +23,4 @@ code/__pycache__/
 env/*
 
 # Microsoft stuff
-report/*.docx
+# report/*.docx
