@@ -3,7 +3,6 @@ import json
 import random
 from retriever import Retriever
 
-
 # Set up
 # ------------------------------------------------------------------------------
 config_file_path = '../config_app/app_config.ini'
@@ -66,7 +65,7 @@ class TopicRetriever:
         assert isinstance(self.parsed_dict, dict)
 
         for key in self.greeting_corpus.keys():
-            print(key)
+            # print(key)
             if key in self.parsed_dict['tokens']:
                 return 'greetings'
 

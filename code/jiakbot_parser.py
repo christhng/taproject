@@ -3,7 +3,7 @@ import nltk
 import re
 
 
-class Parser:
+class JiakBotParser:
     def parse_input(self, user_input):
         parsed_dict = {
             'tokens': [],
@@ -64,9 +64,3 @@ class Parser:
 
         #######################################################################
         return parsed_dict
-
-
-p = Parser()
-output = p.parse_input("Do you have other recommendations?")
-
-print(output)

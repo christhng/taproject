@@ -2,7 +2,7 @@
 
 class StateMachine:
 
-    __state = {
+    state = {
         'retrievable': False, # indicates whether there is enough info to retrieve
         'cuisines' : [],
         'foods' : [],
@@ -19,7 +19,7 @@ class StateMachine:
         # check for food using _check_food function
         # check for location using _check_location function
 
-        # updates the state variable __state
+        # updates the state variable state
 
         return updated # returns True is updated
 
