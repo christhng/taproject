@@ -47,7 +47,7 @@ class Retriever:
 
         # --------------------------------------------------------------------
         # based on jaccard, levenshtein or cosine similarity get 1 comment
-
+        print("hello|world".split(sep="|"))
         result['comment'] = 'food is awful...' # return the result
 
         return result
