@@ -40,14 +40,14 @@ class Retriever:
 
         # randomly select a result based on results
         selected_biz = businesses[random.randint(0,len(businesses))]
-        print(selected_biz)
+        # print(selected_biz)
 
         result['biz_name'] = selected_biz[1] # 2 corresponds to column 2 of the result which is biz_name
         biz_id = selected_biz[0] # 1 corresponds to column 1 which is the biz_id
 
         # --------------------------------------------------------------------
         # based on jaccard, levenshtein or cosine similarity get 1 comment
-        print("hello|world".split(sep="|"))
+        # print("hello|world".split(sep="|"))
         result['comment'] = 'food is awful...' # return the result
 
         return result
@@ -77,4 +77,4 @@ state = {
 
 
 
-print(r.get_result(state,parsed_dict))
+# print(r.get_result(state,parsed_dict))
