@@ -73,7 +73,7 @@ state = {
         'location' :[],
         'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
         'current_state': [1,1,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-    }
+}
 
 
 
