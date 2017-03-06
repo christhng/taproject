@@ -30,6 +30,7 @@ test_sentences = case1_sentences # case2_sentences
 
 # jiakbot code
 # ---------------------------------------------
+print('Initializing jiak bot ... ')
 jiakbot = JiakBot()
 
 if bot_mode == 'live':
