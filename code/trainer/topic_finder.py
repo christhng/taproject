@@ -37,6 +37,7 @@ class ContextGeneration:
         self.__conn = sqlite3.connect( self.__reviews_db )
 
         self.__out_base = config.get( self.config_section, "out_base" )
+
         self.initialize()
 
 
@@ -45,7 +46,7 @@ class ContextGeneration:
         logger.setLevel( logging.DEBUG )
 
         logfile = os.path.splitext( __file__ )[0] + "_" + strftime("%Y%m%d%Y%H%M%S", localtime() ) + ".log"
-        fh = logging.FileHandler( logfile )
+        fh = logging.FileHandler( log_direc + "/" + logfile )
         fh.setLevel( logging.DEBUG )
         formatter = logging.Formatter( '%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
         fh.setFormatter( formatter )
@@ -57,10 +58,14 @@ class ContextGeneration:
         stopword_addendum = [ ".", ",", "a" ]
         self.run['stopwords' ] = stopword_list + stopword_addendum
 
-        #self.__training_doc_limit = self.config.get( self.config_section, "training_doc_limit" )
+        self.__training_doc_limit = self.config.get( self.config_section, "training_doc_limit" ) or -1
+        self.generateDocs()
+        self.readCorpus()
+        self.prepare_data()
 
     def generateDocs( self ):
-        sql = """select description from reviews order by review_id"""
+        sql = """select description from reviews order by review_id limit """ + str( self.__training_doc_limit )
+        print( sql )
         c = self.__conn.cursor()
         c.execute( sql )
         i = 1
@@ -101,19 +106,34 @@ class ContextGeneration:
             self.run['tokenizer'] = RegexpTokenizer( '\w+|[\$\d\.]+' )
         return self.run['tokenizer'].tokenize( sent )
 
+    def word_generator( self, word ):
+        self.__counter.setdefault( word, 1 )
+
+        if self.__counter[ word ] <=2 :
+            self.__counter[ word ] += 1
+            return word
+        else:
+            return ""
+
+    def doc_generator( self, doc ):
+        self.__counter = {}
+        return doc
+
     def preprocess( self, corpus ):
         ###change words to lower case
         corpus = [ [ word.lower() for word in doc ]
                                                     for doc in corpus ]
 
         #####remove stopwords
+
         corpus = [ [ word for word in doc if word not in
                             self.run['stopwords'] ] for doc in corpus ]
 
         ####perform stemming
-        stemmer = PorterStemmer()
-        corpus = [ [ stemmer.stem(word) for word in doc ]
-                                                    for doc in corpus ]
+        #stemmer = PorterStemmer()
+        #corpus = [ [ stemmer.stem(word) for word in doc ] for doc in corpus ]
+        corpus = [ [ self.word_generator( word ) for word in self.doc_generator( doc )  ]
+                                    for doc in corpus ]
         return corpus
 
     def get_tf_idf( self, bow ):
@@ -125,7 +145,7 @@ class ContextGeneration:
         if not 'similarity_index' in self.run:
             self.run['similarity_index'] = similarities.SparseMatrixSimilarity(
                                                 self.run['tfidf_bow'], len(self.run['dictionary'] ) )
-            return sorted( enumerate(self.run['similarity_index'][tfidf]), key=lambda item: -item[1] )
+        return sorted( enumerate(self.run['similarity_index'][tfidf]), key=lambda item: -item[1] )
 
     def prepare_data( self ):
         self.__corpus = self.preprocess( self.__corpus )
@@ -186,22 +206,56 @@ class ContextGeneration:
             if item[0] == id :
                 return( item[1] )
 
-    def get_similarity_topics( self, stmt ):
+    def get_similar_docs( self, stmt, ndocs=1 ):
         stmt_vec = []
         stmt_vec.append( self.tokenize( stmt ) )
         self.preprocess( stmt_vec )
         stmt_vsm = [ i for doc in stmt_vec for i in self.get_tf_idf( self.run['dictionary'].doc2bow(doc) ) ]
         similar_docs = self.get_tf_idf_sim( stmt_vsm )
-        for similar_doc_tuple in similar_docs[:1]:      ###considering only most similar doc
-            similar_doc = similar_doc_tuple[0]
-            likely_topic = self.run['doc_topics'][similar_doc]
-            print( likely_topic )
+        print( similar_docs[:ndocs] )
+
+        
+        #for similar_doc_tuple in similar_docs[:ndocs]:      ###considering only most similar doc
+            #print( self.run['tfidf_bow'][similar_doc_tuple[0]] )
+            #print( self.run['docs_bow'][similar_doc_tuple[0]] )
+            #for t in self.run['tfidf_bow'][similar_doc_tuple[0]]:
+                #print( similar_doc_tuple[0], t[0], self.run['dictionary'][t[0]], t[1] )
+        
+        return similar_docs[:ndocs]
 
 
-a = ContextGeneration()
-a.generateDocs()
+    def get_topics( self, stmt = "", docs = [] ):
+        
+        print( "stmt is -->", stmt )
+        if len( docs ) == 0:
+            if( stmt == "" ):
+                return ""
+            else:
+                docs = self.get_similar_docs( stmt )
+        
+        c = self.__conn.cursor()
+        topics = []
+        for similar_doc_tuple in docs:
+            doc_id = similar_doc_tuple[0]
+            sql = """select topic from reviews where review_id=""" + str(doc_id+1)
+            c.execute( sql )
 
-a.readCorpus()
-a.prepare_data()
-a.perform_lda()
-#a.get_similarity_topics( "i love food and coffee" )
+            for row in c.fetchall():
+                topics.append( row[0].split("|") )
+
+        print( topics )
+
+    def get_doc( self, docid ):
+        return self.__corpus.fileids( docid )
+
+
+
+
+
+
+if __name__ == "__main__":
+    a = ContextGeneration()
+    #a.perform_lda()
+    a.get_similar_docs( "I love food and coffee", 1 )
+    a.get_topics( "I love food and coffee" )
+    a.get_topics( "chicken is even better" )
