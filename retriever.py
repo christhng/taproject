@@ -59,13 +59,13 @@ class Retriever:
         Step 1: Fetech all the reviews based on biz_id
         '''
         
-        c.execute("SELECT review_id, description FROM reviews WHERE biz_id=?",t)
+        c.execute("SELECT description FROM reviews WHERE biz_id=?",t)
         results = c.fetchall()
         
                 
         docs1=[]
         for i in results:
-            doc = word_tokenize(i[1])
+            doc = word_tokenize(i[0])
             docs1.append(doc)
             docs2 = [[w.lower() for w in doc] for doc in docs1]
             docs3 = [[w for w in doc if re.search('^[a-z]+$', w)] for doc in docs2]
@@ -114,7 +114,7 @@ class Retriever:
         
         docschosen=[]
         for h in returnremarks:
-            doc = word_tokenize(i[1])
+            doc = word_tokenize(i[0])
             docschosen.append(doc)   
             docslower = [[w.lower() for w in doc] for doc in docschosen]
             docswords = [[w for w in doc if re.search('^[a-z]+$', w)] for doc in docslower]
@@ -126,7 +126,7 @@ class Retriever:
         print(docschosen[(q_sorted_sims[0][0])])
         print("\n")
         print("\n")
-        result['comment'] = final_docs[(q_sorted_sims[0][0])]
+        result['comment'] = results[0][(q_sorted_sims[0][0])]
         result['category'] = selected_biz[2]
         result['rating'] = selected_biz[3]
         
