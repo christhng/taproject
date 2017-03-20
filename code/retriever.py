@@ -132,7 +132,7 @@ class Retriever:
         print( results[0] )
         print( q_sorted_sims )
         print( "---------------------" )
-        result['comment'] = results[0][(q_sorted_sims[0][0])]
+        result['comment'] = results[0][0]
         result['category'] = selected_biz[2]
         result['rating'] = selected_biz[3]
         
