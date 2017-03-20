@@ -150,8 +150,8 @@ parsed_dict = {
 
 state = {
         'retrievable': False, # indicates whether there is enough info to retrieve
-        'cuisines' : ['malay'],
-        'foods' : ['nasi lemak'],
+        'cuisines' : ['japan'],
+        'foods' : ['ramen'],
         'location' :[],
         'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
         'current_state': [1,1,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
