@@ -45,7 +45,6 @@ class Retriever:
 
         # randomly select a result based on results
         selected_biz = businesses[random.randint(0,len(businesses))]
-        print(selected_biz)
 
         result['biz_name'] = selected_biz[1] # 2 corresponds to column 2 of the result which is biz_name
         biz_id = selected_biz[0] # 1 corresponds to column 1 which is the biz_id
@@ -79,7 +78,6 @@ class Retriever:
         import gensim
         from gensim import corpora
         reviews = corpora.Dictionary(docs4)
-        print(reviews)
                     
         import gensim
         from gensim import models
@@ -89,7 +87,7 @@ class Retriever:
         
         
         from gensim import similarities
-        r_index = similarities.SparseMatrixSimilarity(r_vecs_with_tfidf, 96)
+        r_index = similarities.SparseMatrixSimilarity(r_vecs_with_tfidf, len( reviews ))
         
         print("\n")
         
@@ -98,6 +96,9 @@ class Retriever:
         query_vec_tfidf = r_tfidf[query_vec]
         q_sims = r_index[query_vec_tfidf]
         q_sorted_sims = sorted(enumerate(q_sims), key=lambda item: -item[1])
+        print( "....................." )
+        print( q_sorted_sims )
+        print( "........................." )
         
         print(parsed_dict['tokens'])
         print("\n")
@@ -109,6 +110,7 @@ class Retriever:
         Step 3: Return most relevant review back
         '''
         
+        print( "t = ", str( t ) )
         c.execute("SELECT review_id, description FROM reviews WHERE biz_id=?",t)
         returnremarks = c.fetchall()
         
@@ -126,6 +128,10 @@ class Retriever:
         print(docschosen[(q_sorted_sims[0][0])])
         print("\n")
         print("\n")
+        print( "---------------------")
+        print( results[0] )
+        print( q_sorted_sims )
+        print( "---------------------" )
         result['comment'] = results[0][(q_sorted_sims[0][0])]
         result['category'] = selected_biz[2]
         result['rating'] = selected_biz[3]
