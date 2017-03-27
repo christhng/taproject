@@ -24,7 +24,8 @@ class Retriever:
             'category':'',
             'review':'',
             'statement':'',
-            'rating':''
+            'rating':'',
+            'has_result':False
         }
 
         conn = sqlite3.connect(self.db_path)
@@ -48,6 +49,10 @@ class Retriever:
         # get the business details for the food
         c.execute(sql_str)
         businesses = c.fetchall()
+
+        if len(businesses) == 0:
+            c.close()
+            return result
 
         # randomly select a result based on results
         selected_biz = businesses[random.randint(0,len(businesses))]
