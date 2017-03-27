@@ -6,7 +6,7 @@ import nltk, sqlite3, re
 current_state = [0,0,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
 
 # Establish connection to SQL Database
-db_path = 'C:/Users/Wesley Chan/Documents/GitHub/taproject/database/jiakbot.db'
+db_path = '../database/jiakbot.db'
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 
@@ -76,7 +76,7 @@ stopword = ['good', 'nice', 'food', 'cuisine', 'restaurant', 'stall', 'place', '
 # Identify cuisines and/or food items from user input
 foods_user = []
 for subtree in result.subtrees(filter = lambda t: t.label() == 'FP'):
-    leaves = subtree.leaves()    
+    leaves = subtree.leaves()
     for leaf in leaves:
         food = [w for (w,t) in leaves if re.search(r"(JJ.*|RB|NN.*)", t) and w not in stopword]
         food = ' '.join(food)
@@ -106,3 +106,7 @@ if len(foods) > 0:
 if len(location) > 0:
     current_state[2] = 1   
 
+print(cuisines)
+print(foods)
+print(location)
+print(current_state)

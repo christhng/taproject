@@ -38,6 +38,7 @@ class JiakBot:
         parsed_dict = p.parse_input(sentence)
         print('----- ----- parsed_dict:', parsed_dict)
 
+
         # get the current state
         sm.update_state(parsed_dict)
         print('----- ----- state:',sm.state)

@@ -7,7 +7,7 @@ case1_sentences = [None] * 5
 case1_sentences[0] = "Hey"  # bot: "Hello there. What would you like to eat today?"
 case1_sentences[1] = "I don't know"  # bot: "Where are you?"
 case1_sentences[2] = "Raffles Place"  # bot: "What would you like to have?"
-case1_sentences[3] = "Coffee"  # bot: There is a Ya Kun near Raffles Place...
+case1_sentences[3] = "I want to have coffee"  # bot: There is a Ya Kun near Raffles Place...
 # bot: Some people say "It's the best kaya toast".
 # bot: is that correct?
 case1_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
