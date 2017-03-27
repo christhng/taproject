@@ -3,6 +3,8 @@
         ["hello", ["Hi","Yes?","What's up?","Greetings!"]],
         ["hi",["Hello","Yes?","What's up?"]],
         ["what's up",["Good","Find","Okay","Could be better","Not so great"]],
-        ["how are you", [ "Very well, thanks.","Good.", "Fine, and you?"]]
+        ["how are you", [ "Very well, thanks.","Good.", "Fine, and you?"]],
+        ["hey",["Hello","Yes?","What's up?"]],
+        ["yo",["Hello","Yes?","What's up?"]]
     ]
 }

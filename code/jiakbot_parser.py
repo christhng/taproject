@@ -6,7 +6,7 @@ import re
 
 class JiakBotParser:
     def parse_input(self, user_input):
-        parsed_dict = {'tokens': word_tokenize(user_input),
+        parsed_dict = {'tokens': word_tokenize(user_input.lower()),
                        'input_text': user_input,
                        'cleansed_text': None,
                        'verbs': [],

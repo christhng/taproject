@@ -70,17 +70,20 @@ class StateMachine:
         self.state['foods'] = [food for food in foods_user if food not in self.state['cuisines']]
         self.state['location'] = location_user
 
-        # Udpate state
+        # Update state
         self.state['previous_state'] = self.state['current_state']
 
         if len(self.state['cuisines']) > 0:
             self.state['current_state'][0] = 1
+            self.state['retrievable'] = True
 
         if len(self.state['foods']) > 0:
             self.state['current_state'][1] = 1
+            self.state['retrievable'] = True
 
         if len(self.state['location']) > 0:
             self.state['current_state'][2] = 1
+            self.state['retrievable'] = True
 
         if self.state['previous_state'] == self.state['current_state']:
             updated = False

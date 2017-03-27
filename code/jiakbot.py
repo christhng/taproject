@@ -36,14 +36,16 @@ class JiakBot:
 
         # get the parsed dict
         parsed_dict = p.parse_input(sentence)
-        print('----- ----- parsed_dict:', parsed_dict)
-
 
         # get the current state
         sm.update_state(parsed_dict)
-        print('----- ----- state:',sm.state)
+
+        # print('----- ----- ----- -----')
+        # print('parsed_dict:', parsed_dict)
+        # print('state:',sm.state)
+        # print('----- ----- ----- -----')
 
         # get the response
-        response = r.prepare_response(sm.state, parsed_dict)
+        response = r.get_response(sm.state, parsed_dict)
 
         return(response)
