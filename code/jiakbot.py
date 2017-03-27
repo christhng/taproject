@@ -11,7 +11,7 @@ logger = logging.getLogger()
 
 # INFO to switch display all logs
 # WARNING to display only warning
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 
 class JiakBot:

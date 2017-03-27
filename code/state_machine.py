@@ -28,6 +28,7 @@ class StateMachine:
 
     def update_state(self, parsed_dict):
 
+        self.state['retrievable'] = False
         updated = False
 
         tagged = nltk.pos_tag(nltk.word_tokenize(parsed_dict['input_text']))

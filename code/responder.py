@@ -95,10 +95,16 @@ class Responder:
             if not result[key]:
                 response = 'Sorry, I wasn\'t able to find anything relevant! :('
             else:
-                response = "You can try %s at %s. " \
-                           "They serve %s food. " \
-                           "Here's a review someone had for %s:\n %s" \
-                           % (result['biz_name'], result['biz_location'], result['category'], result['comment'])
+                response = "You can try {0}. " \
+                           "They serve {1}. " \
+                           "Here's a statement someone made for {2}:\n{3} \n" \
+                           "Here's a full review, " \
+                           "if you bothered to read: \n{4}\n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['category'],
+                                                                      result['biz_name'],
+                                                                      result['statement'],
+                                                                      result['review'])
 
         # prepare response
         return response
