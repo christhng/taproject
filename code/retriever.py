@@ -1,7 +1,7 @@
 # import your libraries here
 import sqlite3
 import random
-import nltk 
+import nltk
 import re
 from nltk.tokenize import word_tokenize
 import gensim
