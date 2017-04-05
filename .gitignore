@@ -17,7 +17,9 @@ config_app/personal.ini
 
 # pycache
 code/__pycache__/*.*
-code/__pycache__/
+webapp/bot/__pycache__/*.*
+webapp/jiakbot/__pycache__/*.*
+webapp/webapp/__pycache__/*.*
 
 # Virtual Environment
 env/*
