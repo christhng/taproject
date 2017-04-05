@@ -89,7 +89,7 @@ Responder | Respond to user's input by performing the above tasks and returning 
 * Defining good response?
 * Defining accuracy?
 
-## Discusssions
+## Discussions
 
 
 ## References
