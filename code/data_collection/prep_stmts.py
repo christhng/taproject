@@ -59,12 +59,14 @@ for result in results:
         #cleansed = [stemmer.stem(w) for w in cleansed]
         #print(cleansed)
 
-        # join using pipe
-        cleansed = "|".join([w for w in cleansed])
-        #print(cleansed)
+        if len(cleansed) > 1:
 
-        record = [review_id,sent_token, cleansed]
-        records.append(record)
+            # join using pipe
+            cleansed = "|".join([w for w in cleansed])
+            #print(cleansed)
+
+            record = [review_id,sent_token, cleansed]
+            records.append(record)
 
 # insert into stg_categories table
 c.executemany('INSERT INTO stmts (review_id,stmt,stmt_cleansed) VALUES (?,?,?)', records)

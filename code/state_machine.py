@@ -8,7 +8,8 @@ class StateMachine:
         'foods' : [],
         'location' :[],
         'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-        'current_state': [0,0,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
+        'current_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
+        'retrieved': False
     }
 
     # Establish connection to SQL Database
@@ -34,11 +35,11 @@ class StateMachine:
         tagged = nltk.pos_tag(nltk.word_tokenize(parsed_dict['input_text']))
 
         grammar = r"""
-            FP: 
+            FP:
                 {<VB.*><JJ.*|IN|>?<RB>?<NN.*>+}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
-            LP: 
+            LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
         """
