@@ -15,7 +15,7 @@ class Retriever:
 
     db_path = '../database/jiakbot.db'
 
-    def get_result(self,state,parsed_dict,previous_recommendation=[]):
+    def get_result(self,state,parsed_dict,previous_recommendation=[],anything=False):
 
         result = {
             'biz_id':'',
@@ -93,6 +93,12 @@ class Retriever:
                       "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
                       "WHERE lower(c.cuisine) LIKE '%{0}%' OR lower(f.food) LIKE '%{1}%' " \
                       "ORDER BY b.biz_rating DESC LIMIT 10;".format(food, cuisine)
+
+        if anything:
+            # override everything and pick any random food place
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;"
 
         # get the business details for the food
         c.execute(sql_str)

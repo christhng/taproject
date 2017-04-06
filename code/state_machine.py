@@ -137,7 +137,7 @@ class StateMachine:
         self.state['session'][input_num] = {
             'foods': self.state['foods'],
             'cuisines': self.state['cuisines'],
-            'location': self.state['location']
+            'locations': self.state['locations']
         }
 
         if len(self.state['cuisines']) > 0:

@@ -2,6 +2,7 @@ import configparser
 import json
 import random
 from retriever import Retriever
+from state_machine import StateMachine
 
 # Set up
 # ------------------------------------------------------------------------------
@@ -24,6 +25,7 @@ generic_resp_path = config['file_path']['generic_response_corpus']
 yes_response_path = config['file_path']['yes_response_corpus']
 no_response_path = config['file_path']['no_response_corpus']
 question_to_feedback_path = config['file_path']['question_to_feedback_corpus']
+response_to_rhetoric_path = config['file_path']['rhetoric_response_corpus']
 further_probe_path = config['file_path']['further_probe_corpus']
 
 # load data
@@ -37,6 +39,7 @@ yes_or_no_data = json.load(open(yes_or_no_path))
 yes_response_data = json.load(open(yes_response_path))
 no_response_data = json.load(open(no_response_path))
 question_to_feedback_data = json.load(open(question_to_feedback_path))
+response_to_rhetoric_data = json.load(open(response_to_rhetoric_path))
 further_probe_data = json.load(open(further_probe_path))
 
 # convert greeting data to dict
@@ -75,6 +78,8 @@ class Responder:
     no_response = no_response_data['no_response']
     # responses to questions user asks when bot asks for feedback
     question_to_feedback = question_to_feedback_data['question']
+    # rhetoric responses
+    rhetoric_responses = response_to_rhetoric_data['rhetoric_response']
     # words that encourage further probing
     further_probe_words = further_probe_data['probe_words']
 
@@ -89,9 +94,30 @@ class Responder:
 
         # retrieve the input type - question, rhetoric, statement
         input_type = parsed_dict['input_type']
+        valid_locations = ['city hall', 'raffles place', 'bras basah', 'dhoby ghaut']
+
+        # logic to construct a sensible response
+        # get topic from parsed_dict - greeting, bot, user
+        # default response to be overriden
+        topic = self._get_topic(parsed_dict)
+        response = AlternativeResponder(
+            parsed_topic=topic,
+            parsed_dict=parsed_dict,
+            input_type=input_type
+            ).construct()
+
         if input_type == 'rhetoric':
             response = self._construct_response_to_rhetoric(parsed_dict)
-        if state['retrievable']:
+        elif len(state['locations']) > 0:
+            if state['locations'][0] not in valid_locations and state['locations'][0] in StateMachine().known_locations:
+                response = "Sorry, sir - Jiakbot is not that well travelled."
+            elif state['locations'][0] in valid_locations and state['locations'][0] in StateMachine().known_locations:
+                response_dict = self._construct_response_from_db(state, parsed_dict, anything=True)
+                response = response_dict['response']
+                retrieved = response_dict['retrieved']
+                state['retrieved'] = retrieved
+                state['recommendations'] = response_dict['recommendations']
+        elif state['retrievable']:
         # if retrievable go retrieve the biz name, location and 1 line of review
             response_dict = self._contruct_response_from_db(state, parsed_dict)
             response = response_dict['response']
@@ -116,16 +142,9 @@ class Responder:
             response = r['response']
             state['post_feedback'] = r['post_feedback']
             state['recommendations'] = r['recommendations']
-        # logic to construct a sensible response
-        else:
-            # get topic from parsed_dict - greeting, bot, user
-            topic = self._get_topic(parsed_dict)
-            response = AlternativeResponder(
-                parsed_topic=topic,
-                parsed_dict=parsed_dict,
-                input_type=input_type
-                ).construct()
+
         return response
+
 
     def _contruct_response_from_db(self, state, parsed_dict):
         """
