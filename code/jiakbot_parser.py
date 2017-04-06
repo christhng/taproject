@@ -1,10 +1,15 @@
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 from nltk.corpus import stopwords
+from sklearn.externals import joblib
 
 import re
+import numpy as np
 
 class JiakBotParser:
+
+    question_clf = joblib.load('jiak_models/question_model.pkl')
+
     def parse_input(self, user_input):
         parsed_dict = {'tokens': word_tokenize(user_input.lower()),
                        'input_text': user_input,
@@ -14,7 +19,7 @@ class JiakBotParser:
                        'nouns': [],
                        'adjs': [],
                        'pronouns': [],
-                       'is_question': False}
+                       'input_type': []}
 
         tagged = pos_tag(parsed_dict['tokens'])
 
@@ -34,10 +39,53 @@ class JiakBotParser:
         parsed_dict['pronouns'] = [word for word, pos in tagged \
                                    if (pos == 'PRP' or pos == 'PRP$' or pos == 'WP' or pos == 'WP$')]
 
-
+        
         stop_list = stopwords.words('english')
         words = [w for w in parsed_dict['tokens'] if re.search('^[a-z]+$', w)]
         parsed_dict['cleansed_text'] = [w for w in words if w not in stop_list]
 
         #######################################################################
+        # predicting question / rhetoric / statements
+
+        where_features = ['where is', 'where are', 'where can', 'where was', 'where you', 'where to', 'where']
+        who_features = ['who is', 'who was', 'who are', 'who were', 'who to', 'who did', 'who do', 'who']
+        what_features = ['what is', 'what was', 'what are', 'what were', 'what to', 'what did', 'what do', 'what']
+        when_features = ['when is', 'when was', 'when are', 'when were', 'when to', 'when did', 'when do', 'when']
+        why_features = ['why is', 'why was', 'why are', 'why were', 'why did', 'why do', 'why']
+        which_features = ['which is', 'which was', 'which are', 'which were', 'which did', 'which do', 'which']
+        how_features = ['how is', 'how was', 'how are', 'how were', 'how did', 'how do', 'how']
+        would_features = ['why would', 'would i', 'would you', 'why do']
+        qm = ['\\?']
+
+        features = where_features + who_features + \
+                   what_features + when_features + why_features + which_features + \
+                   how_features + would_features + qm
+
+        # empty vector
+        vector = []
+
+        # create custom feature vector with label
+        for feature in features:
+
+            # match against the feature
+            match = re.search(feature, user_input.lower())
+
+            if match is not None:
+                vector.extend([1])
+            else:
+                vector.extend([0])
+
+        input_vector = np.array(vector).reshape(1,-1)
+        parsed_dict['input_type'] = self.question_clf.predict(input_vector)[0]
+
+        #######################################################################
         return parsed_dict
+
+
+# jbp = JiakBotParser()
+# print(jbp.parse_input("why would i care?"))
+# jbp.parse_input("where can i find good noodles?")
+# jbp.parse_input("i need some food?")
+# jbp.parse_input("chicken rice nice or not?")
+# jbp.parse_input("what is nice at raffles place?")
+# jbp.parse_input("where to find good coffee")
