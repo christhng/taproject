@@ -46,17 +46,18 @@ class StateMachine:
         # define the grammar. FP = Food Phrase. LP = Location Phrase
         grammar = r"""
             FP:
-                {<VB.*><JJ.*|IN|>?<RB>?<NN.*>+}
+                {<VB.*><JJ.*|IN|>?<RB>?<NN.*>+<VB>}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
-                {<NN.*>+<VB.*|RB>?}
+                {<NN.*>+<VBP>?}
         """
 
         cp = nltk.RegexpParser(grammar)
         result = cp.parse(tagged)
+
         # ----------------------------------------------------------------------------
         # Identify cuisines and/or food items from user input
         # food and cuisine identified together and then separated
@@ -69,8 +70,7 @@ class StateMachine:
             food_cuisines = ' '.join(food_cuisines)
             identified_food_cuisines.append(food_cuisines)
 
-
-
+        print(identified_food_cuisines)
         # ----------------------------------------------------------------------------
         # identifying location
         # ----------------------------------------------------------------------------
@@ -104,9 +104,10 @@ class StateMachine:
 
             for subtree in result.subtrees(filter=lambda t: t.label() == 'FP'):
                 leaves = subtree.leaves()
-                food_cuisines = [w for (w, t) in leaves if re.search(r"(JJ.*|VB|RB|NN.*)", t) and w not in self.non_food_words]
+                food_cuisines = [w for (w,t) in leaves if re.search(r"(JJ|NN)", t) and w not in self.non_food_words]
                 food_cuisines = ' '.join(food_cuisines)
-                identified_food_cuisines.append(food_cuisines)
+                if food_cuisines != '':
+                    identified_food_cuisines.extend([food_cuisines])
 
         # ----------------------------------------------------------------------------
         # finalize the identified lists
@@ -115,10 +116,6 @@ class StateMachine:
         identified_foods = [phrase for phrase in identified_food_cuisines if phrase.lower() not in self.known_cuisines]
         identified_cuisines = [phrase for phrase in identified_food_cuisines if phrase.lower() in self.known_cuisines]
         identified_locations = [phrase for phrase in identified_locations if phrase.lower() not in not_location]
-        #
-        # print(identified_foods)
-        # print(identified_cuisines)
-        # print(identified_locations)
 
         # append to the state
         self.state['foods'].extend(identified_foods)
@@ -162,15 +159,18 @@ class StateMachine:
 ########################################################
 # for testing purposes
 ########################################################
-#
-# sm = StateMachine()
-#
-# parsed_dict = {'nouns': ['raffles', 'place'],
-#                'input_text': 'bras basah',
-#                'input_type': 'question',
-#                'pronouns': ['what'],
-#                'verbs': ['is'],
-#                'cleansed_text': ['nice', 'raffles', 'place'],
-#                'tokens': ['what', 'is', 'nice', 'at', 'raffles', 'place', '?'], 'adjs': ['nice'], 'adverbs': []}
-#
-# sm.update_state(parsed_dict=parsed_dict)
+
+sm = StateMachine()
+
+parsed_dict = {'nouns': ['raffles', 'place'],
+               'input_text': 'i want to have burgers',
+               'input_type': 'question',
+               'pronouns': ['what'],
+               'verbs': ['is'],
+               'cleansed_text': ['nice', 'raffles', 'place'],
+               'tokens': ['what', 'is', 'nice', 'at', 'raffles', 'place', '?'], 'adjs': ['nice'], 'adverbs': []}
+
+sm.update_state(parsed_dict=parsed_dict)
+print(sm.state['foods'])
+print(sm.state['locations'])
+print(sm.state['cuisines'])

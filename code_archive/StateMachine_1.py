@@ -100,7 +100,7 @@ sent = 'raffles place'
 tagged = nltk.pos_tag(nltk.word_tokenize(sent))
 print('pos tag: \n', tagged)
 
-sent = 'bras basah'
+sent = 'i want to have nasi lemak'
 tagged = nltk.pos_tag(nltk.word_tokenize(sent))
 print('pos tag: \n', tagged)
 
