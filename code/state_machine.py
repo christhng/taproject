@@ -52,11 +52,11 @@ class StateMachine:
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
+                {<NN.*>+<VB.*|RB>?}
         """
 
         cp = nltk.RegexpParser(grammar)
         result = cp.parse(tagged)
-
         # ----------------------------------------------------------------------------
         # Identify cuisines and/or food items from user input
         # food and cuisine identified together and then separated
@@ -158,7 +158,7 @@ class StateMachine:
 # sm = StateMachine()
 #
 # parsed_dict = {'nouns': ['raffles', 'place'],
-#                'input_text': 'Recommend an japanese food place at Bras Basah',
+#                'input_text': 'bras basah',
 #                'input_type': 'question',
 #                'pronouns': ['what'],
 #                'verbs': ['is'],

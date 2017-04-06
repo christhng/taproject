@@ -104,9 +104,9 @@ sent = 'bras basah'
 tagged = nltk.pos_tag(nltk.word_tokenize(sent))
 print('pos tag: \n', tagged)
 
-sent = 'chilli crab'
-tagged = nltk.pos_tag(nltk.word_tokenize(sent))
-print('pos tag: \n', tagged)
+# sent = 'chilli crab'
+# tagged = nltk.pos_tag(nltk.word_tokenize(sent))
+# print('pos tag: \n', tagged)
 
 
 # Use regular expression–based chunker to group pos
