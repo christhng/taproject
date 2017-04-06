@@ -115,7 +115,7 @@ class StateMachine:
         identified_foods = [phrase for phrase in identified_food_cuisines if phrase.lower() not in self.known_cuisines]
         identified_cuisines = [phrase for phrase in identified_food_cuisines if phrase.lower() in self.known_cuisines]
         identified_locations = [phrase for phrase in identified_locations if phrase.lower() not in not_location]
-        
+
         # print(identified_foods)
         # print(identified_cuisines)
         # print(identified_locations)
@@ -154,15 +154,15 @@ class StateMachine:
 ########################################################
 # for testing purposes
 ########################################################
-
-sm = StateMachine()
-
-parsed_dict = {'nouns': ['raffles', 'place'],
-               'input_text': 'Recommend an japanese food place at Bras Basah',
-               'input_type': 'question',
-               'pronouns': ['what'],
-               'verbs': ['is'],
-               'cleansed_text': ['nice', 'raffles', 'place'],
-               'tokens': ['what', 'is', 'nice', 'at', 'raffles', 'place', '?'], 'adjs': ['nice'], 'adverbs': []}
-
-sm.update_state(parsed_dict=parsed_dict)
+#
+# sm = StateMachine()
+#
+# parsed_dict = {'nouns': ['raffles', 'place'],
+#                'input_text': 'Recommend an japanese food place at Bras Basah',
+#                'input_type': 'question',
+#                'pronouns': ['what'],
+#                'verbs': ['is'],
+#                'cleansed_text': ['nice', 'raffles', 'place'],
+#                'tokens': ['what', 'is', 'nice', 'at', 'raffles', 'place', '?'], 'adjs': ['nice'], 'adverbs': []}
+#
+# sm.update_state(parsed_dict=parsed_dict)
