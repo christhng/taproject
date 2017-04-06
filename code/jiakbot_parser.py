@@ -54,12 +54,13 @@ class JiakBotParser:
         why_features = ['why is', 'why was', 'why are', 'why were', 'why did', 'why do', 'why']
         which_features = ['which is', 'which was', 'which are', 'which were', 'which did', 'which do', 'which']
         how_features = ['how is', 'how was', 'how are', 'how were', 'how did', 'how do', 'how']
-        would_features = ['why would', 'would i', 'would you', 'why do']
+        would_features = ['why would', 'would i', 'would you']
+        can_features = ['can you', 'could you', 'could i']
         qm = ['\\?']
 
         features = where_features + who_features + \
                    what_features + when_features + why_features + which_features + \
-                   how_features + would_features + qm
+                   how_features + would_features + can_features + qm
 
         # empty vector
         vector = []
@@ -78,14 +79,15 @@ class JiakBotParser:
         input_vector = np.array(vector).reshape(1,-1)
         parsed_dict['input_type'] = self.question_clf.predict(input_vector)[0]
 
+        print(user_input,self.question_clf.predict(input_vector)[0])
         #######################################################################
         return parsed_dict
 
 
-# jbp = JiakBotParser()
-# print(jbp.parse_input("why would i care?"))
-# jbp.parse_input("where can i find good noodles?")
-# jbp.parse_input("i need some food?")
-# jbp.parse_input("chicken rice nice or not?")
-# jbp.parse_input("what is nice at raffles place?")
-# jbp.parse_input("where to find good coffee")
+jbp = JiakBotParser()
+jbp.parse_input("why would i care?")
+jbp.parse_input("where can i find good noodles?")
+jbp.parse_input("i need some food?")
+jbp.parse_input("chicken rice nice or not?")
+jbp.parse_input("what is nice at raffles place?")
+jbp.parse_input("can you recommend where to find good coffee")

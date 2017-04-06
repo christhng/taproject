@@ -35,12 +35,13 @@ when_features = ['when is','when was','when are','when were','when to','when did
 why_features = ['why is','why was','why are','why were','why did','why do','why']
 which_features = ['which is','which was','which are','which were','which did','which do','which']
 how_features = ['how is','how was','how are','how were','how did','how do','how']
-would_features = ['why would','would i','would you','why do']
+would_features = ['why would','would i','would you']
+can_features = ['can you','could you','could i']
 qm =['\\?']
 
 features = where_features + who_features + \
            what_features + when_features + why_features + which_features + \
-           how_features + would_features + qm
+           how_features + would_features + can_features + qm
 
 file_path = 'code/jiak_trainer/question_corpus.txt'
 
@@ -56,6 +57,7 @@ for row in matrix:
     data.append(vector)
 
 df = pd.DataFrame(data)
+
 df.rename(columns={len(df.columns)-1:'label'}, inplace=True)
 
 strat_split = StratifiedShuffleSplit(n_splits=1, train_size=0.75, test_size=0.25, random_state=2016)
@@ -102,4 +104,4 @@ print(classification_report(label_test, predicted_label_test))
 print('accuracy score: ', accuracy_test)
 
 # save model to disk
-joblib.dump(clf, '../jiak_models/question_model.pkl', compress=9)
+# joblib.dump(clf, '../jiak_models/question_model.pkl', compress=9)
