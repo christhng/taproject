@@ -6,7 +6,7 @@ import nltk, sqlite3, re
 current_state = [0,0,0] # cuisine,food,location - 0 indicates nothing, 1 indicates populated
 
 # Establish connection to SQL Database
-db_path = 'C:/Users/Wesley Chan/Documents/GitHub/taproject/database/jiakbot.db'
+db_path = '../database/jiakbot.db'
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 
@@ -104,9 +104,9 @@ sent = 'bras basah'
 tagged = nltk.pos_tag(nltk.word_tokenize(sent))
 print('pos tag: \n', tagged)
 
-sent = 'chilli crab'
-tagged = nltk.pos_tag(nltk.word_tokenize(sent))
-print('pos tag: \n', tagged)
+# sent = 'chilli crab'
+# tagged = nltk.pos_tag(nltk.word_tokenize(sent))
+# print('pos tag: \n', tagged)
 
 
 # Use regular expression–based chunker to group pos
@@ -145,6 +145,7 @@ for subtree in result.subtrees(filter = lambda t: t.label() == 'LP'):
         place = [w for (w,t) in leaves if re.search(r"(JJ.*|NN.*|VB.*|RB)", t)]
         place = ' '.join(place)
     location_user.append(place)
+    print(location_user)
 
 not_location =  [location for location in location_user if location not in location_dict 
                  and location not in location_dict_lc]  
@@ -181,8 +182,3 @@ if len(foods) > 0:
     
 if len(location) > 0:
     current_state[2] = 1   
-
-print('cuisines:', cuisines)
-print('foods:', foods)
-print('location:', location)
-
