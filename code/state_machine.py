@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import nltk, sqlite3, re
 
 class StateMachine:
@@ -9,7 +10,10 @@ class StateMachine:
         'location' :[],
         'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
         'current_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-        'retrieved': False
+        'retrieved': False,
+        'post_feedback': False,
+        'recommendations': [],
+        'session': OrderedDict()
     }
 
     # Establish connection to SQL Database
@@ -132,6 +136,14 @@ class StateMachine:
 
         # Update state
         self.state['previous_state'] = self.state['current_state']
+        input_num = 1
+        if self.state['session'].keys():
+            input_num = max(self.state['session'].keys()) + 1
+        self.state['session'][input_num] = {
+            'foods': self.state['foods'],
+            'cuisines': self.state['cuisines'],
+            'location': self.state['location']
+        }
 
         if len(self.state['cuisines']) > 0:
             self.state['current_state'][0] = 1

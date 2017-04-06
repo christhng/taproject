@@ -7,7 +7,16 @@
         "yup",
         "ye",
         "yas",
-        "yeap"
+        "yeap",
+        "yeah",
+        "good",
+        "thanks",
+        "great",
+        "satisfied",
+        "ok la",
+        "so so",
+        "not bad",
+        "not so bad"
     ],
     "no": [
         "no",
@@ -15,6 +24,8 @@
         "nah",
         "nu",
         "not at all",
-        "not really"
+        "not really",
+        "zzz",
+        "change"
     ]
 }
