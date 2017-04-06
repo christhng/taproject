@@ -115,15 +115,15 @@ class StateMachine:
         identified_foods = [phrase for phrase in identified_food_cuisines if phrase.lower() not in self.known_cuisines]
         identified_cuisines = [phrase for phrase in identified_food_cuisines if phrase.lower() in self.known_cuisines]
         identified_locations = [phrase for phrase in identified_locations if phrase.lower() not in not_location]
-
+        #
         # print(identified_foods)
         # print(identified_cuisines)
         # print(identified_locations)
 
         # append to the state
-        self.state['foods'].append(identified_foods)
-        self.state['cuisines'].append(identified_cuisines)
-        self.state['locations'].append(identified_locations)
+        self.state['foods'].extend(identified_foods)
+        self.state['cuisines'].extend(identified_cuisines)
+        self.state['locations'].extend(identified_locations)
 
         # ----------------------------------------------------------------------------
         # all the logic to update the states
