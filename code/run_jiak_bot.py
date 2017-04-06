@@ -25,8 +25,8 @@ case2_sentences[5] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 # PARAMETERS:
 # ---------------------------------------------
-bot_mode = 'live' # live
-test_sentences = case1_sentences # case2_sentences
+bot_mode = 'test' # live
+test_sentences = case2_sentences # case2_sentences
 
 # jiakbot code
 # ---------------------------------------------

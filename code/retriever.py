@@ -71,16 +71,18 @@ class Retriever:
         sql_str = "SELECT r.biz_id, r.description, s.stmt FROM reviews r " \
                   "LEFT JOIN stmts s ON r.review_id = s.review_id " \
                   "WHERE r.biz_id = '{0}';".format(biz_id)
+        #
+        # c.execute(sql_str)
+        # results = c.fetchall()
 
-        c.execute(sql_str)
-        results = c.fetchall()
-
+        results = []
         tokenized_docs = []
         processed_docs = []
 
-        for i in results:
-            doc = word_tokenize(i[2])
+        for row in c.execute(sql_str):
+            doc = word_tokenize(row[2])
             tokenized_docs.append(doc)
+            results.append(row)
 
         processed_docs = [[w.lower() for w in doc] for doc in tokenized_docs]
         processed_docs = [[w for w in doc if re.search('^[a-z]+$', w)] for doc in processed_docs]

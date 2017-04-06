@@ -79,15 +79,15 @@ class JiakBotParser:
         input_vector = np.array(vector).reshape(1,-1)
         parsed_dict['input_type'] = self.question_clf.predict(input_vector)[0]
 
-        print(user_input,self.question_clf.predict(input_vector)[0])
+        # print(user_input,self.question_clf.predict(input_vector)[0])
         #######################################################################
         return parsed_dict
 
-
-jbp = JiakBotParser()
-jbp.parse_input("why would i care?")
-jbp.parse_input("where can i find good noodles?")
-jbp.parse_input("I don't know what is in the sauce (light colored and very minimal) but it sure packed a punch.")
-jbp.parse_input("chicken rice nice or not?")
-jbp.parse_input("what is nice at raffles place?")
-jbp.parse_input("can you recommend where to find good coffee")
+#
+# jbp = JiakBotParser()
+# jbp.parse_input("why would i care?")
+# jbp.parse_input("where can i find good noodles?")
+# jbp.parse_input("I don't know what is in the sauce (light colored and very minimal) but it sure packed a punch.")
+# jbp.parse_input("chicken rice nice or not?")
+# jbp.parse_input("what is nice at raffles place?")
+# jbp.parse_input("can you recommend where to find good coffee")
