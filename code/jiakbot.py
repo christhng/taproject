@@ -40,10 +40,10 @@ class JiakBot:
         # get the current state
         sm.update_state(parsed_dict)
 
-        # print('----- ----- ----- -----')
-        # print('parsed_dict:', parsed_dict)
-        # print('state:',sm.state)
-        # print('----- ----- ----- -----')
+        print('----- ----- ----- -----')
+        print('parsed_dict:', parsed_dict)
+        print('state:',sm.state)
+        print('----- ----- ----- -----')
 
         # get the response
         response = r.get_response(sm.state, parsed_dict)
