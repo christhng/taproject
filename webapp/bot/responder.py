@@ -23,6 +23,8 @@ about_user_responses_path = config['file_path']['about_user_responses']
 generic_resp_path = config['file_path']['generic_response_corpus']
 yes_response_path = config['file_path']['yes_response_corpus']
 no_response_path = config['file_path']['no_response_corpus']
+question_to_feedback_path = config['file_path']['question_to_feedback_corpus']
+further_probe_path = config['file_path']['further_probe_corpus']
 
 # load data
 greeting_data = json.load(open(greeting_path))
@@ -34,6 +36,8 @@ generic_corpus_data = json.load(open(generic_resp_path))
 yes_or_no_data = json.load(open(yes_or_no_path))
 yes_response_data = json.load(open(yes_response_path))
 no_response_data = json.load(open(no_response_path))
+question_to_feedback_data = json.load(open(question_to_feedback_path))
+further_probe_data = json.load(open(further_probe_path))
 
 # convert greeting data to dict
 greetings = {
@@ -69,6 +73,10 @@ class Responder:
     no_words = yes_or_no_data['no']
     yes_response = yes_response_data['yes_response']
     no_response = no_response_data['no_response']
+    # responses to questions user asks when bot asks for feedback
+    question_to_feedback = question_to_feedback_data['question']
+    # words that encourage further probing
+    further_probe_words = further_probe_data['probe_words']
 
     def get_response(self, state, parsed_dict):
         """
@@ -79,22 +87,43 @@ class Responder:
             parsed (dict) - Dictionary passed from Parser object
         """
 
-        # if retrievable go retrieve the biz name, location and 1 line of review
+        # retrieve the input type - question, rhetoric, statement
+        input_type = parsed_dict['input_type']
+        if input_type == 'rhetoric':
+            response = self._construct_response_to_rhetoric(parsed_dict)
         if state['retrievable']:
+        # if retrievable go retrieve the biz name, location and 1 line of review
             response_dict = self._contruct_response_from_db(state, parsed_dict)
             response = response_dict['response']
             retrieved = response_dict['retrieved']
             state['retrieved'] = retrieved
+            state['recommendations'] = response_dict['recommendations']
         # detect if previous statement was a recommendation
         elif state['retrieved']:
-            response = self._construct_response_to_feedback(parsed_dict)
-            state['retrieved'] = False # reset retrieved status
+            # if bot is asking for a feedback
+            # pass input_type to constructor
+            r = self._construct_response_to_feedback(parsed_dict, input_type, state)
+            response = r['response']
+            state['retrieved'] =  r['retrieved'] # reset retrieved status
+            state['post_feedback'] = r['post_feedback']
+            state['recommendations'] = r['recommendations']
+        elif state['post_feedback'] and input_type != 'question':
+            # construct a response for the user's input right after the bot
+            # has responded to the user's feedback about the most recent
+            # recommendation
+            r = self._construct_response_to_post_feedback(parsed_dict, input_type, state)
+            # construct response
+            response = r['response']
+            state['post_feedback'] = r['post_feedback']
+            state['recommendations'] = r['recommendations']
         # logic to construct a sensible response
         else:
+            # get topic from parsed_dict - greeting, bot, user
             topic = self._get_topic(parsed_dict)
             response = AlternativeResponder(
                 parsed_topic=topic,
-                parsed_dict=parsed_dict
+                parsed_dict=parsed_dict,
+                input_type=input_type
                 ).construct()
         return response
 
@@ -126,11 +155,12 @@ class Responder:
                                                                   result['biz_name'],
                                                                   result['statement'],
                                                                   result['review'])
+            state['recommendations'].append(result['biz_name'])
             retrieved = True
         # prepare response
-        return {'response': response, 'retrieved': retrieved}
+        return {'response': response, 'retrieved': retrieved, 'recommendations': state['recommendations']}
 
-    def _construct_response_to_feedback(self, parsed_dict):
+    def _construct_response_to_feedback(self, parsed_dict, input_type, state):
         """
         Response generated in response to feedback given to a
         prior recommendation.
@@ -138,12 +168,91 @@ class Responder:
         Arguments:
             parsed_dict (dict) - Dictionary passed from Parser object
         """
+        # If bot asked for feedback and user, in turn, asked a question back
+        retrieved = True
+        post_feedback = False
+        # default response
+        response = "Wah I don't understand sia, can just let me know whether my recommendation useful or not?"
+        # check for intent
+        intent = self._check_post_feedback_intent(parsed_dict)
+        recommendations = state['recommendations']
+        if intent == 'further_probe':
+            retriever = Retriever()
+            result = retriever.get_result(state, parsed_dict, recommendations)
+            if result['biz_name']:
+                response = "Ok, maybe you can try {0} instead! " \
+                           "They serve {1}. " \
+                           "Here's a statement someone made for {2}:\n{3} \n" \
+                           "Here's a full review, " \
+                           "if you bothered to read: \n{4}\n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['category'],
+                                                                      result['biz_name'],
+                                                                      result['statement'],
+                                                                      result['review'])
+                recommendations.append(result['biz_name'])
+            else:
+                # no other suggestions
+                response = "Sorry I can't find anything else liao!"
+                retrieved = False
+                post_feedback = True
+        elif input_type == 'question':
+            response = random.choice(self.question_to_feedback)
+        # If user gave a response that could be understood as 'yes' or 'no'
+        else:
+            for w in parsed_dict['tokens']:
+                if w in self.yes_words:
+                    response = random.choice(self.yes_response)
+                    retrieved = False
+                    post_feedback = True
+                elif w in self.no_words:
+                    response = random.choice(self.no_response)
+                    retrieved = False
+                    post_feedback = True
+        return {'response': response, 'retrieved': retrieved, 'post_feedback': post_feedback, 'recommendations': recommendations}
+
+    def _construct_response_to_post_feedback(self, parsed_dict, input_type, state):
+        """
+        Response to user's input. This is only for the conversation immediately
+        after the user's response to the bot's request for feedback.
+
+        In this case, the feedback MUST have already been retrieved. This is
+        the final step before state machine resets
+        """
+        post_feedback = True
+        intent = self._check_post_feedback_intent(parsed_dict)
+        if intent == 'further_probe':
+            recommendations = state['recommendations']
+            retriever = Retriever()
+            result = retriever.get_result(state, parsed_dict, recommendations)
+            response = "You can try {0}. " \
+                       "They serve {1}. " \
+                       "Here's a statement someone made for {2}:\n{3} \n" \
+                       "Here's a full review, " \
+                       "if you bothered to read: \n{4}\n" \
+                       "Is this what you are looking for?".format(result['biz_name'],
+                                                                  result['category'],
+                                                                  result['biz_name'],
+                                                                  result['statement'],
+                                                                  result['review'])
+            recommendations = recommendations.append(result['biz_name'])
+        elif intent == 'reset':
+            # get topic from parsed_dict - greeting, bot, user
+            topic = self._get_topic(parsed_dict)
+            response = AlternativeResponder(
+                parsed_topic=topic,
+                parsed_dict=parsed_dict,
+                input_type=input_type
+                ).construct()
+            post_feedback = False
+            recommendations = []
+        return {'response': response, 'post_feedback': post_feedback, 'recommendations': recommendations}
+
+    def _check_post_feedback_intent(self, parsed_dict):
         for w in parsed_dict['tokens']:
-            if w in self.yes_words:
-                response = random.choice(self.yes_response)
-            elif w in self.no_words:
-                response = random.choice(self.no_response)
-        return response
+            if w in self.further_probe_words:
+                return 'further_probe'
+        return 'reset'
 
     def _get_topic(self, parsed_dict):
 
@@ -184,7 +293,7 @@ class AlternativeResponder:
         **about_user_response_data, **generic_corpus_data
     }
 
-    def __init__(self, parsed_dict, parsed_topic):
+    def __init__(self, parsed_dict, parsed_topic, input_type):
         """
         Return AlternativeResponder object which will respond to
         a particular topic
@@ -198,8 +307,9 @@ class AlternativeResponder:
 
         self.parsed_dict = parsed_dict
         self.parsed_topic = parsed_topic
+        self.input_type = input_type
 
-    def check_topic(self):
+    def _check_topic(self):
         """
         Checks if parsed_topic argument is in list of available topics
         """
@@ -217,12 +327,13 @@ class AlternativeResponder:
             bot can comprehend
         """
 
-        if self.check_topic():
+        if self._check_topic():
             if self.parsed_topic == 'greetings':
                 greetings = self.responses['greetings']
                 for key in greetings.keys():
                     if key in self.parsed_dict['tokens']:
                         response = random.choice(greetings[key])
+
             else:
                 response = random.choice(self.responses[self.parsed_topic])
         else:

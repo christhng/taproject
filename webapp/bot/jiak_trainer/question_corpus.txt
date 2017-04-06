@@ -1,0 +1,342 @@
+statement	label	source
+Where can i get good nasi lemak at toa payoh?	question	wesley
+I'm looking for a tonkatsu or yakitori place in bras basah?	question	wesley
+Recommend where to go for nasi biryani	question	wesley
+Where can I get french food at HarbourFront	question	wesley
+Any good coffee place at tanjong pagar?	question	wesley
+I would like to have fish head curry today	question	wesley
+I have been to that place before please recommend another one	question	wesley
+That place is overrated suggest another one	question	wesley
+Any other recommendations as that place is overpriced	question	wesley
+How is the weather today?	question	wesley
+Is the place open today	question	wesley
+What is the time now	question	wesley
+Are you a bot	question	wesley
+What is your name?	question	wesley
+What do you do for a living	question	wesley
+I would like to go for japanese food today	question	wesley
+Thank you for the food recommendations	statement	wesley
+I like that place	statement	wesley
+The food there was not nice	statement	wesley
+The place is overrated	statement	wesley
+That place is too far from here	statement	wesley
+Have a good day	statement	wesley
+Gosh it's raining now	statement	wesley
+I like to talk to bots	statement	wesley
+Nice talking to you	statement	wesley
+Goodbye	statement	wesley
+Good morning	statement	wesley
+Restaurant Andre is in the list of top 50 restaurants in the world	statement	wesley
+Singapore has the cheapest place with a Michelin star	statement	wesley
+I used to stay at Toa Payoh	statement	wesley
+The MRT is breaking down so often these days	statement	wesley
+Food prices are going to rise this year with the hike in water prices	statement	wesley
+Real stay top with Leganes win	statement	wesley
+Barca thump Sevilla yesterday night	statement	wesley
+LOL	statement	wesley
+where can i find good Indian food?	question	brij
+where can i find good Indian chicken near Tampines?	question	brij
+What are good Japanese restaurants near Raffles?	question	brij
+What to have with chicken?	question	brij
+Where can i find Irish Coffee?	question	brij
+Which can i find cheap coffee?	question	brij
+Where should i go fo healthy morning brekfast?	question	brij
+What are good cafes in Tampines?	question	brij
+Could you suggest soem restaurants with good vibe?	question	brij
+What are the mexican serving restaurants?	question	brij
+I am Tampines	statement	brij
+I like coffee	statement	brij
+I want to eat chicken with Indian spices	statement	brij
+Mexican food is my favourite	statement	brij
+Suggest a mexican restaurant near Orchard	statement	brij
+I want a restaurat with quite ambience	statement	brij
+I like vegetarian food	statement	brij
+I like non-vegetarian food	statement	brij
+Suggest a cheap restaurants near Orchard	statement	brij
+You are a fool	statement	brij
+Where can I find the best prata? 	question	kahling
+Are you sure this is the best chicken rice? 	question	kahling
+are you a foodie? 	question	kahling
+How sure are you? 	question	kahling
+what is nice around CBD? 	question	kahling
+whats nice and within $10 in CBD? 	question	kahling
+who are you? 	question	kahling
+can i trust you? 	question	kahling
+when is the best time to go for lunch in CBD? 	question	kahling
+when is the restaurant open? 	question	kahling
+what is the opening hours? 	question	kahling
+do they have any promotions? 	question	kahling
+how do i qualify for the promotion? 	question	kahling
+which credit card qualifies for the promotion? 	question	kahling
+are you kidding me? 	question	kahling
+is this your best recommendation? 	question	kahling
+has anyone told you your recommendation sucks? 	question	kahling
+do you know of any late night places in CBD? 	question	kahling
+Wheres somewhere with good food and ambience? 	question	kahling
+what type of food do they serve? 	question	kahling
+is it halal? 	question	kahling
+im supposed to trust a bot? 	question	kahling
+youre a female, arent you? 	question	kahling
+may i know your name? 	question	kahling
+will you be my friend? 	question	kahling
+can you be more relevant? 	question	kahling
+seriously? 	question	kahling
+why did i even ask you? 	question	kahling
+whats the meaning of life? 	question	kahling
+do you sense my sarcasm? 	question	kahling
+do you have any friends? 	question	kahling
+isnt it lonely out there? 	question	kahling
+where are you located? 	question	kahling
+whats wrong with you!? 	question	kahling
+hows your day? 	question	kahling
+seriously? 	question	kahling
+if i speak nicely to you, will you provide me with better recommendations? 	question	kahling
+can you do better? 	question	kahling
+youre not!? 	question	kahling
+i like the Dark Knight, do you? 	question	kahling
+whats your favourite food? 	question	kahling
+cant you do anything right? 	question	kahling
+why not? 	question	kahling
+you think im dumb, dont you? 	question	kahling
+do you ever wonder about the universe? 	question	kahling
+can i ask you a question? 	question	kahling
+why is the sky blue? 	question	kahling
+how many languages do you speak? 	question	kahling
+dont you think so? 	question	kahling
+arent you glad that this is coming to an end? 	question	kahling
+you can do better 	statement	kahling
+seriously 	statement	kahling
+you suck! 	statement	kahling
+get a life 	statement	kahling
+you need more training 	statement	kahling
+i need more options	statement	kahling
+tell me a joke 	statement	kahling
+youre fired! 	statement	kahling
+hahaha what a joke! 	statement	kahling
+why so serious? 	statement	kahling
+you must be kidding 	statement	kahling
+i wonder about your existence ..	statement	kahling
+describe your location 	statement	kahling
+i love you! 	statement	kahling
+you seriously didnt sense my sarcasm ..	statement	kahling
+argh!!!! 	statement	kahling
+goodbye! 	statement	kahling
+bye 	statement	kahling
+i had a lousy day 	statement	kahling
+please be nice 	statement	kahling
+im not impressed 	statement	kahling
+hey 	statement	kahling
+i want to eat bak kut teh 	statement	kahling
+nice brunch places, please 	statement	kahling
+i am sure you can do better 	statement	kahling
+youre just a bot 	statement	kahling
+life is like a box of chocolate ..	statement	kahling
+mine has milk chocolates only 	statement	kahling
+i bet you had a much better day than me 	statement	kahling
+your recommendations dont suit me 	statement	kahling
+the recommendations are not relevant 	statement	kahling
+those are not bak kut teh! 	statement	kahling
+i said prata! 	statement	kahling
+youre definitely not local 	statement	kahling
+youre not familiar with the local scene 	statement	kahling
+my friend said that youre pretty useful 	statement	kahling
+but i beg to differ 	statement	kahling
+although you look and sound cool, youre just another bimbo 	statement	kahling
+you are crazy, just like the rest of us 	statement	kahling
+i cant go with your recommendations! 	statement	kahling
+those are not relevant alternatives 	statement	kahling
+indian or chinese foods only 	statement	kahling
+i dont want restaurants 	statement	kahling
+i want hawker stalls selling western food 	statement	kahling
+recommended hawker centre fish & chips 	statement	kahling
+thanks! 	statement	kahling
+youve been a great help 	statement	kahling
+i would highly recommend you to my friends 	statement	kahling
+its been a pleasure chatting with you 	statement	kahling
+see you! 	statement	kahling
+i want eat food 	statement	chris
+raffles place is nice 	statement	chris
+chicken rice is not the best food 	statement	chris
+food is a necessity, i need it 	statement	chris
+wonder why i take so long to eat 	statement	chris
+the recommendation sucks 	statement	chris
+i will make my way 	statement	chris
+dont count on my food knowledge 	statement	chris
+an outdoor environment would be nice 	statement	chris
+deciding between chinese or western or indian 	statement	chris
+my ex-girlfriend likes salad 	statement	chris
+salad is love, salad is life 	statement	chris
+i prefer meat 	statement	chris
+i wonder how you get your reviews 	statement	chris
+you could replace ladyironchef 	statement	chris
+ubereats should consider delivering to my house 	statement	chris
+if you were integrated into siri, life would be perfect 	statement	chris
+i do not want to be charged for take-away 	statement	chris
+american food is not as flavourful as chinese 	statement	chris
+wish i had food now 	statement	chris
+the lighting in food places should be brighter 	statement	chris
+i need food for my computer 	statement	chris
+computer juice sounds perfect 	statement	chris
+sometimes i feel like a plastic bag 	statement	chris
+hahahaha great 	statement	chris
+dude, no way..	statement	chris
+stop killing pigs, i am a vegetarian 	statement	chris
+i wish you could give me more chicken wing recommendations 	statement	chris
+a plastic bag is not counted as take-away 	statement	chris
+dabao la! 	statement	chris
+you dont want to play with me, i will crush you 	statement	chris
+some bots just think they are so smart 	statement	chris
+i hope they realise they are just programs with no feelings 	statement	chris
+why, today seems like a pleasant day 	statement	chris
+so what if i do not like your recommendations 	statement	chris
+attack of the flying pigs!! 	statement	chris
+this one from airpork 	statement	chris
+that one from dunno where 	statement	chris
+having milo for lunch is good 	statement	chris
+but milo is fattening 	statement	chris
+i like to poo after eating 	statement	chris
+you want die, tell me, i destroy your codes with my punch 	statement	chris
+I AM ONE PUNCH MAN! 	statement	chris
+just kidding 	statement	chris
+okay, this is damnn lame 	statement	chris
+nah, i am having fun what 	statement	chris
+you think chicken is good for lunch, i do not think so 	statement	chris
+wish i had a pork chop in my plate 	statement	chris
+my wants and my needs are two different things, i want chicken rice but i need food 	statement	chris
+can i have a recommendation for chicken rice? 	question	chris
+you stupid is it? 	question	chris
+do you have other choices? 	question	chris
+another one? 	question	chris
+maybe something else? 	question	chris
+what the hell is this recommendation? 	question	chris
+can i please have a different one...? 	question	chris
+western food places please 	question	chris
+where is a good place for spicy western food? 	question	chris
+any specials for today? 	question	chris
+why do you recommend me this? 	question	chris
+does this place have water? 	question	chris
+what food is good and cheap? 	question	chris
+how to get from my office to there? 	question	chris
+got any places serve chips a not? 	question	chris
+eeyer, can change? 	question	chris
+you really think can eat nasi lemak without chilli? 	question	chris
+how the heck you come up with this review!? 	question	chris
+the location has changed right? 	question	chris
+can you be my girlfriend? 	question	chris
+why not?? 	question	chris
+do you have a name? 	question	chris
+any good nearby food? 	question	chris
+chicken rice or chicken wings? 	question	chris
+that one good a not? 	question	chris
+this food place got spicy one right? 	question	chris
+can i quit my job? 	question	chris
+i want a different food place, please recommend? 	question	chris
+can i eat pig liver in office? 	question	chris
+do cows actually fly? 	question	chris
+if got cheaper, how? 	question	chris
+you think you smart is it? 	question	chris
+haha, any others? 	question	chris
+please, how i know? 	question	chris
+you consider this cheap? 	question	chris
+how can i fill the hole in my heart? 	question	chris
+can i eat pig heart? 	question	chris
+animals are smarter than bots right? 	question	chris
+how to eat and change at the same time? 	question	chris
+is poopoo a food? 	question	chris
+chinese food or indian food? 	question	chris
+can i have a mix of both? 	question	chris
+you think talking to myself fun? 	question	chris
+can you end my misery? 	question	chris
+how to heal my heavy heart? 	question	chris
+yeah, good idea, got better one? 	question	chris
+is junquan your creator? 	question	chris
+dhoby ghaut counted as cbd? 	question	chris
+got erp during lunchtime? 	question	chris
+you very free ah, talk with me so long 	question	chris
+*ahem*    Sincere healthy food  Located in at the bottom of the one raffles  You do what is blatantly good  When we want something more than just waffles   Your chicken breast is skinless  Your beetroot yam combi fulfilling  Your service is wonderfully full of classiness  Which is why i love the food that im eating	statement	db
+I don't know what is in the sauce (light colored and very minimal) but it sure packed a punch.	statement	db
+But for me, I think they chicken does not taste particularly outstanding, and the sauces on the table actually tastes better and are more flavorful than what is used to marinate the chicken.	statement	db
+I find these do change frequently, so it depend on what is available that day.	statement	db
+Language has also been a slight barrier for me at times in cases where I want to know exactly what is in a dish.	statement	db
+Overall it's about average and it makes wonder if I should be letting a gwai lo (in Cantonese) tell me what is good Chinese food.	statement	db
+Do expect a long line as the Singaporeans all some to gather to what is supposedly the best.	statement	db
+It was really tough and nothing like what is expected of food that is slow cooked.	statement	db
+It's small which means there is a longer line, but that is ok is you expect it, what is not though is seeing the same scoop being used for several toppings and the need to request sauce on the side instead of it being standard.	statement	db
+I can't tell you exactly what is in there besides some sashimi pieces and a bunch of goodness but trust me.. You will love it.	statement	db
+Every dish was well thought out, balancing flavorsome, textures, and spices; the wait staff were very well trained and always happy to help; having the meals explained by the kitchen staff too always highlights what is important to them.	statement	db
+Thus, after watching the hunger-inducing documentary Jiro dreams of sushi, I felt compelled to try the real deal at what is considered one of the best sushi restaurants in Singapore.	statement	db
+In additional, what is more important is that you can still find authentic local food that has been in business for many years.	statement	db
+We also made do with some roast pork and duck and washed it all down with what is now one of my favorite beverages in SE Asia:  Water chestnut drink.	statement	db
+I had no idea what is good here besides the famous Tian Tian Chicken Rice stall.	statement	db
+I've never been much of a fan of paying much money for, well, what is essentially flour (all you bakers - hold your pitchforks!	statement	db
+I can't even figure out what is in the crepe.	statement	db
+I asked what is popular, she said depends on individual.	statement	db
+They don't understand what is Medium.	statement	db
+the menu price, making the cost much higher than what is printed.	statement	db
+But if you do want something off menu or what is special that day, just ask.	statement	db
+It is ok.   What is interesting is that you get 6 types of soup broth and ramen in one shop, so it can be a good place if you and your dining companions like different things.	statement	db
+However, what is truly excellent is their wine service from their in house sommelier (yes, this is for you wine aficionados who need your glasses changed depending whether you have a big burgundy red, or a more subtle Pinot.	statement	db
+Now, stuck in the corner of a less known coffee shop, the love isn't what is use to be.	statement	db
+Although the number of dishes may not looks as many as what is served in Teppei's $80 multi course meal, one really feels as full.	statement	db
+Excellent small intimate with character on Duxton Road for what is one of the best beers in Singapore.	statement	db
+For a side, I had the Vietnamese Yam Roll and OHMYGOSH WHAT IS THIS PURPLE DELICIOUSNESS.	statement	db
+When I am desperate for food and don't want to walk far, I see what is on offer at Icon Village.	statement	db
+Osteria Mozza serves up what is probably the best Italian food in Singapore, but that doesn't necessarily mean that it's the best Italian restaurant around.	statement	db
+I liked how you can see from a live TV feed behind what is being played inside by the band on stage.	statement	db
+There were only 2 people in line ahead of me (a questionable fact since I try to look for places with long lines as a method of what is good in the moment) but I figured what the heck, for $4 SGD, I'll take my chances and if it is bad, I'll write it off as the cost of street food exploration.	statement	db
+so what is the big deal.	statement	db
+You walk into a bar after work with this *gawsh I need a drink & some super unhealthy flash fried junk* look and proceed to order whatevers on tap and at happy hour prices (because you don't want to spend money on what is essentially becoming water after a hard day's work, literal and metaphorical pun intended) and then something to fill the stomach.	statement	db
+4.5cm tall balls filled with creamy bechamel and chunks of what is possibly iberico ham (i expect no less) left us wanting for more.	statement	db
+Before you start worrying about onion breath, these ones here are slow roasted till tender, and what is left behind is pure caramelized sweetness.	statement	db
+This exemplifies what is wrong with the restaurant.	statement	db
+But what is heartening to know is that the ingredients used at Spizzico are fresh and the sauces are made from scratch.	statement	db
+Much of the sashimi is seasonal, so always ask for what is available.	statement	db
+Here what is great is how there are no hard and fast rules.	statement	db
+Besides the usual menu, the staff also make his offers on what is in season by using a daily special cart.	statement	db
+If this isn't a well-balanced dish, I don't know what is.	statement	db
+The gf knows I have his obsession with it and she could see the excitement in me, knowing that I was not only finally going to satisfy my craving for minced pork noodles but was going to try what is apparently THE BEST minced pork noodles in Singapore now.	statement	db
+All I can say is I don't see what is so special about it.	statement	db
+Demand for seating seems higher than what is available.	statement	db
+If this isn't a win, I don't know what is.	statement	db
+Prices as are expected - $8.50 for the latte and cappuccino above - and broadly in line with what is charged in other quality cafes.	statement	db
+With fusion cuisine having the tendency of trying too hard, I think many are often disappointed with what is offered.	statement	db
+Better but still short of what is good.	statement	db
+As I was getting hungry to, why not see what is so special with pricey coffee.	statement	db
+I was a happy man - this place went what is beyond the call of duty in a starbucks and turned my frown into a delighted customer.	statement	db
+I spent many years living in Georgia so I know what is delicious southern food!	statement	db
+Though I am not vegetarian, which is what is on the menu here, dishes served here are delectable!	statement	db
+I have never been able to identify the banana blossom in the dish but the sauce is so good I don't really care what is in it.	statement	db
+Talk about what is a real swiss roll.	statement	db
+The food they serve is nothing like what is pictured on their menu.	statement	db
+I tried asking a shop staff what is the name of the shop.	statement	db
+But the food is really what is so stellar about this place.	statement	db
+It was my first introduction to what is known as Hawker stands.	statement	db
+I wish there were a few Indian options, but what is here is pretty good.	statement	db
+Yes, freely mix n match what is on your plate - for an equally delightful result do what you may!	statement	db
+I think the cappuccinos here are probably closer to what you'd get in Italy than some of the better places in San Francisco since the coffee beans used here are on more of the delicate side and the milk used tastes more creamy than what is normally used in the US.	statement	db
+Everyone mentioned how Hai Di Lao is known for their service, but I do not think it is that extraordinary so I have no idea what is the baseline for comparison.	statement	db
+It must have been years since I last visited Katong Shopping Centre, and when I did I had to try what is arguably one of the top few chicken rice stalls in Singapore.	statement	db
+You could select the tea of your choice, you just have to ask them what is available.	statement	db
+If you are unfamiliar with your surroundings, there are signs showing what is where.	statement	db
+The rosti enables me to eat what is essentially a cake of french fries and not feel as bad about it because it is so fresh, and the raclette is divine.	statement	db
+Available from Mon to Sat from  2.30pm to 5.30pm, this is a pretty good deal for what is usually priced at $4-6 per box of little bites.	statement	db
+In particular, the dim sum items are hot favorites as what is served at Bosses is probably more exquisite than what you commonly get outside.	statement	db
+The whole place is as auhentic as it gets, and it serves what is undoubtedly the best briyani in Singapore.	statement	db
+Finally I can see what is the attraction.	statement	db
+I cannot recall what is in the  set now.	statement	db
+We were seated very quickly inside what is quite a small restaurant, although there appears to be additional seating areas upstairs.	statement	db
+There is local food such as satay outdoors, Japanese food, Western food and more depending on what is available on the day that you are there.	statement	db
+Even though most top-tier sushi restaurants have chefs and staff that know their sake very well (except for a certain place that has two hotel locations and enjoys only recommending what is most expensive at both locations), Ki-sho also has an in-house sake sommelier that is the best.	statement	db
+For example, what is the difference between the large and small sweet and sour pork.	statement	db
+I think they took what is already a borderline mediocre chain restaurant in the US and made the portions smaller and the prices higher.	statement	db
+Apparently omakase is Japanese and literally means, respectfully leaving another to decide what is best.	statement	db
+There are daily specials on rotation so you never know what is available - Hainanese pork chop, curry pork chop chap chye rice, sweet and sour fish, sweet and sour pork, fish and chips, yong tau foo (ampang style).	statement	db
+I can't taste what is different in between foie gras, black truffle or crab roe.	statement	db
+Because that's the one reason to go - 50% off most things, bringing the price slightly below what is normal for what is served.	statement	db
+Unfortunately our table was served by a generally absent waiter who saw it fit to educate us on the different types of coffee (eg what is a latte!)	statement	db
+The water path is kept at a constant temperature, normally lower than what is required for cooking.	statement	db
+So thank you Sir Nik T. for this wonderful experience and introducing me to what is now my second favorite chicken rice spot in Singapore.	statement	db
+The setting is beautiful in what is a pretty ugly and boring Tanglin Mall.	statement	db
+I want to commend Indian restaurants that try and push the boundaries for what is usually a typical and predictable kind of experience but to say that some dishes were just awful is a totally new thing for me.	statement	db
+It depends on what is available during that season really.	statement	db
+And personally, the quality of the buffet spread is actually quite good which makes the price (which is in the $50-60 range depending on what is on the seasonal buffet menu) quite worth it.	statement	db

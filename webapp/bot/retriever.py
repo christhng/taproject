@@ -15,7 +15,7 @@ class Retriever:
 
     db_path = '../database/jiakbot.db'
 
-    def get_result(self,state,parsed_dict):
+    def get_result(self,state,parsed_dict,previous_recommendation=[]):
 
         result = {
             'biz_id':'',
@@ -32,19 +32,67 @@ class Retriever:
         c = conn.cursor()
 
         # select most recent food input from the state object
+        food = None
         if len(state['foods']) > 0:
             food = state['foods'][0]
 
         # select most recent cuisine input from the state object
+        cuisine = None
         if len(state['cuisines']) > 0:
             cuisine = state['cuisines'][0]
+        existing_recommendations = ""
+        if previous_recommendation:
+            existing_recommendations = " AND b.biz_name NOT IN (" + ",".join('"' + rec + '"' for rec in previous_recommendation) + ") "
+            foods = [session['foods'][0] if len(session['foods']) > 0 else '' for session in state['session'].values()]
+            cuisines = [session['cuisines'][0] if len(session['cuisines']) > 0 else '' for session in state['session'].values()]
+            if len(foods) > 0:
+                foods.reverse()
+                try:
+                    food = next(f for f in foods if f)
+                except StopIteration:
+                    pass
+            if len(cuisines) > 0:
+                cuisines.reverse()
+                try:
+                    cuisine = next(c for c in cuisines if c)
+                except StopIteration:
+                    pass
 
-        # based on state (which contains food, cuisine, location) get 1 business that matches
-
-        sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                  "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                  "WHERE lower(f.food) LIKE '%{0}%' " \
-                  "ORDER BY b.biz_rating DESC LIMIT 10;".format(food)
+        if existing_recommendations and food:
+            # based on state (which contains food, cuisine, location) get 1 business that matches
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "WHERE lower(f.food) LIKE '%{0}%'".format(food) + existing_recommendations + \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;"
+        elif existing_recommendations and cuisine:
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                      "WHERE lower(c.cuisine) LIKE '%{0}%'".format(cuisine) + existing_recommendations + \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;"
+        elif existing_recommendations and food and cuisine:
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                      "WHERE lower(c.cuisine) LIKE '%{0}%' OR lower(f.food) LIKE '%{1}%' ".format(food, cuisine) + existing_recommendations + \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;"
+        elif food and not cuisine:
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "WHERE lower(f.food) LIKE '%{0}%' " \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(food)
+        elif not food and cuisine:
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                      "WHERE lower(c.cuisine) LIKE '%{0}%' " \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(cuisine)
+        elif food and cuisine:
+            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                      "WHERE lower(c.cuisine) LIKE '%{0}%' OR lower(f.food) LIKE '%{1}%' " \
+                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(food, cuisine)
 
         # get the business details for the food
         c.execute(sql_str)
@@ -71,16 +119,18 @@ class Retriever:
         sql_str = "SELECT r.biz_id, r.description, s.stmt FROM reviews r " \
                   "LEFT JOIN stmts s ON r.review_id = s.review_id " \
                   "WHERE r.biz_id = '{0}';".format(biz_id)
+        #
+        # c.execute(sql_str)
+        # results = c.fetchall()
 
-        c.execute(sql_str)
-        results = c.fetchall()
-
+        results = []
         tokenized_docs = []
         processed_docs = []
 
-        for i in results:
-            doc = word_tokenize(i[2])
+        for row in c.execute(sql_str):
+            doc = word_tokenize(row[2])
             tokenized_docs.append(doc)
+            results.append(row)
 
         processed_docs = [[w.lower() for w in doc] for doc in tokenized_docs]
         processed_docs = [[w for w in doc if re.search('^[a-z]+$', w)] for doc in processed_docs]
