@@ -104,4 +104,4 @@ print(classification_report(label_test, predicted_label_test))
 print('accuracy score: ', accuracy_test)
 
 # save model to disk
-# joblib.dump(clf, '../jiak_models/question_model.pkl', compress=9)
+joblib.dump(clf, '../jiak_models/question_model.pkl', compress=9)

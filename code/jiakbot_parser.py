@@ -87,7 +87,7 @@ class JiakBotParser:
 jbp = JiakBotParser()
 jbp.parse_input("why would i care?")
 jbp.parse_input("where can i find good noodles?")
-jbp.parse_input("i need some food?")
+jbp.parse_input("I don't know what is in the sauce (light colored and very minimal) but it sure packed a punch.")
 jbp.parse_input("chicken rice nice or not?")
 jbp.parse_input("what is nice at raffles place?")
 jbp.parse_input("can you recommend where to find good coffee")
