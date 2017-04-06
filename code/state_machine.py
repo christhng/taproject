@@ -1,22 +1,9 @@
-<<<<<<< HEAD
-import nltk, sqlite3, re
-from collections import OrderedDict
-=======
 import nltk, re
 from collections import OrderedDict
->>>>>>> c862eb7bbb2750838ab7a24e8128200644fb04ec
 
 class StateMachine:
 
     state = {
-<<<<<<< HEAD
-        'retrievable': False, # indicates whether there is enough info to retrieve
-        'cuisines' : [],
-        'foods' : [],
-        'location' :[],
-        'previous_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-        'current_state': [0,0,0], # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-=======
         'retrievable': False,  # indicates whether there is enough info to retrieve
         'cuisines': [],
         'foods': [],
@@ -27,7 +14,6 @@ class StateMachine:
         'post_feedback': False,
         'recommendations': [],
         'session': OrderedDict()
->>>>>>> c862eb7bbb2750838ab7a24e8128200644fb04ec
     }
 
     # read in locations
