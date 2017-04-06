@@ -25,13 +25,13 @@ case2_sentences[5] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 
 # test sentences (use case 3)
-case3_sentences = [None] * 7
+case3_sentences = [None] * 3
 case3_sentences[0] = "hi"  # bot: "greeting + question"
 case3_sentences[1] = "i would like to have prata"  # bot: "acknowledge + review + satisfied?"
 case3_sentences[2] = "okay, i will try that out. thanks!!"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 4)
-case4_sentences = [None] * 8
+case4_sentences = [None] * 6
 case4_sentences[0] = "morning"  # bot: "greeting + question"
 case4_sentences[1] = "wah this cool sia"  # bot: "acknowledge + further probe"
 case4_sentences[2] = "oh, paiseh i wanted laksa from malay cuisine"  # bot: "acknowledge + review + satisfied?"
@@ -40,7 +40,7 @@ case4_sentences[4] = "different restaurant la adoi..."  # bot: "acknowledge + re
 case4_sentences[5] = "ya thats good, shall try that"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 5)
-case5_sentences = [None] * 9
+case5_sentences = [None] * 8
 case5_sentences[0] = "hello!"  # bot: "greeting + question"
 case5_sentences[1] = "hmm, i want to eat chicken rice which is chinese cuisine i guess?"  # bot: "acknowledge + review + satisfied?"
 case5_sentences[2] = "do you have another restaurant? i don't like that place"  # bot: "acknowledge + further probe"
@@ -51,7 +51,7 @@ case5_sentences[6] = "woops, type wrong. change food, i want japanese ramen la" 
 case5_sentences[7] = "yes"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 6)
-case6_sentences = [None] * 10
+case6_sentences = [None] * 9
 case6_sentences[0] = "yo!!"  # bot: "greeting + question"
 case6_sentences[1] = "holy shit, it actually works lol"  # bot: "acknowledge + further probe"
 case6_sentences[2] = "hehe let me see... chicken rice lor"  # bot: "acknowledge + further probe"
@@ -60,17 +60,17 @@ case6_sentences[4] = "cool... got other places?"  # bot: "acknowledge + further 
 case6_sentences[5] = "change place la... isnt it obvious"  # bot: "acknowledge + further probe"
 case6_sentences[6] = "zzz. CHANGE RESTAURANT"  # bot: "acknowledge + review + satisfied?"
 case6_sentences[7] = "no."  # bot: "acknowledge + further probe"
-case6_sentences[7] = "no."  # bot: "acknowledge + further probe"
+case6_sentences[8] = "no."  # bot: "acknowledge + further probe"
 
 # test sentences (use case 7)
-case7_sentences = [None] * 11
+case7_sentences = [None] * 4
 case7_sentences[0] = "wassup"  # bot: "greeting + question"
 case7_sentences[1] = "erm. I would like some malay food"  # bot: "acknowledge + further probe"
 case7_sentences[2] = "malay food like rendang?"  # bot: "acknowledge + review + satisfied?"
 case7_sentences[3] = "Yeah great!! I shall try that out then"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 8)
-case8_sentences = [None] * 12
+case8_sentences = [None] * 7
 case8_sentences[0] = "hey wassup bro"  # bot: "greeting + question"
 case8_sentences[1] = "I AM SUPERMAN, I WANT KRYPTONITE!!"  # bot: "acknowledge + further probe"
 case8_sentences[2] = "kidding la.. let me think"  # bot: "acknowledge + further probe"
@@ -80,7 +80,7 @@ case8_sentences[5] = "... i want change food to wings"  # bot: "acknowledge + re
 case8_sentences[6] = "ok la very satisfied, time to talk to chickens. Bye"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 9)
-case9_sentences = [None] * 13
+case9_sentences = [None] * 7
 case9_sentences[0] = "idiot"  # bot: "acknowledge + further probe"
 case9_sentences[1] = "what u want, stop asking me to do stuff"  # bot: "acknowledge + further probe"
 case9_sentences[2] = "hi"  # bot: "greeting + question"
