@@ -46,13 +46,16 @@ class StateMachine:
         # define the grammar. FP = Food Phrase. LP = Location Phrase
         grammar = r"""
             FP:
-                {<VB.*><JJ.*|IN|>?<RB>?<NN.*>+<VB>}
+                {<VB.*><JJ.*|IN|>?<RB>?<NN.*>+<VB>?}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
+                {<NNS>}
+                {<JJ>}
+                {<RB><NN>}
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
-                {<NN.*>+<VBP>?}
+                {<NN.*>+<VBP>+}
         """
 
         cp = nltk.RegexpParser(grammar)
@@ -70,7 +73,6 @@ class StateMachine:
             food_cuisines = ' '.join(food_cuisines)
             identified_food_cuisines.append(food_cuisines)
 
-        print(identified_food_cuisines)
         # ----------------------------------------------------------------------------
         # identifying location
         # ----------------------------------------------------------------------------
@@ -82,8 +84,6 @@ class StateMachine:
             locations = [w for (w, t) in leaves if re.search(r"(JJ.*|NN.*|VB.*|RB)", t)]
             locations = ' '.join(locations)
             identified_locations.append(locations)
-
-
 
         # ----------------------------------------------------------------------------
         # for detected locations, check if its actually a food
@@ -162,15 +162,17 @@ class StateMachine:
 
 sm = StateMachine()
 
-parsed_dict = {'nouns': ['raffles', 'place'],
-               'input_text': 'i want to have burgers',
-               'input_type': 'question',
-               'pronouns': ['what'],
-               'verbs': ['is'],
-               'cleansed_text': ['nice', 'raffles', 'place'],
-               'tokens': ['what', 'is', 'nice', 'at', 'raffles', 'place', '?'], 'adjs': ['nice'], 'adverbs': []}
-
+parsed_dict = {'input_text': 'hey'}
 sm.update_state(parsed_dict=parsed_dict)
-print(sm.state['foods'])
-print(sm.state['locations'])
-print(sm.state['cuisines'])
+print('original statement:', parsed_dict['input_text'])
+print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+
+parsed_dict = {'input_text': 'i want to have burgers and maybe laksa or japanese food'}
+sm.update_state(parsed_dict=parsed_dict)
+print('original statement:', parsed_dict['input_text'])
+print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+
+parsed_dict = {'input_text': 'got laksa around here?'}
+sm.update_state(parsed_dict=parsed_dict)
+print('original statement:', parsed_dict['input_text'])
+print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
