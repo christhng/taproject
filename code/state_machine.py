@@ -160,19 +160,19 @@ class StateMachine:
 # for testing purposes
 ########################################################
 
-sm = StateMachine()
-
-parsed_dict = {'input_text': 'hey'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to have burgers and maybe laksa or japanese food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'got laksa around here?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# sm = StateMachine()
+#
+# parsed_dict = {'input_text': 'hey'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to have burgers and maybe laksa or japanese food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'got laksa around here?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
