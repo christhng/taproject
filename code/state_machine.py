@@ -1,5 +1,4 @@
 import nltk, re
-from collections import OrderedDict
 
 class StateMachine:
 
@@ -11,9 +10,6 @@ class StateMachine:
         'previous_state': [0, 0, 0],  # cuisine,food,location - 0 indicates nothing, 1 indicates populated
         'current_state': [0, 0, 0],  # cuisine,food,location - 0 indicates nothing, 1 indicates populated
         'retrieved': False,
-        'post_feedback': False,
-        'recommendations': [],
-        'session': OrderedDict()
     }
 
     # read in locations
@@ -127,16 +123,6 @@ class StateMachine:
 
         # Update state
         self.state['previous_state'] = self.state['current_state']
-        input_num = 1
-
-        if self.state['session'].keys():
-            input_num = max(self.state['session'].keys()) + 1
-
-        self.state['session'][input_num] = {
-            'foods': self.state['foods'],
-            'cuisines': self.state['cuisines'],
-            'locations': self.state['locations']
-        }
 
         if len(self.state['cuisines']) > 0:
             self.state['current_state'][0] = 1
@@ -161,154 +147,154 @@ class StateMachine:
 # for testing purposes
 ########################################################
 
-sm = StateMachine()
-
-parsed_dict = {'input_text': 'hey'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to have burgers or japanese food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i get katong laksa around here?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'any good tonkatsu or yakitori place nearby?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where is a good place for french food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'got any places serving fish & chips in shenton way'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'what food is good and cheap near simei'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'get me some hot and spicy chicken wings'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'any place serving good porterhouse steaks in marina bay?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'recommend an Australian barbecue restaurant'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i get authentic seafood paella in city hall'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'any place serving blue mountain coffee?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'Recommend a spanish tapas place near bugis'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i find cheap szechuan food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to eat salad today'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want a different food place, please recommend?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'when is the best time to go for lunch in CBD?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to eat bak kut teh'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'my boss bringing us out for chilli crab or black pepper crab, quick recommend a place'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want hawker stalls selling western food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i find fish head curry in little india'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to have japanese monster curry rice today'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'I am going to Jurong East. Recommend a place for chinese food'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i get the best roti plata in kovan'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'lazy to think what to eat today. recommend anything'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'i want to have beef horfun today'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i get penang char koay teow around dhoby ghaut'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'let us go for pipa duck today'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'my friend suggest to go for chicken rice. where is the nearest place?'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-parsed_dict = {'input_text': 'where can i get pork knuckles with beer the german way'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# sm = StateMachine()
+#
+# parsed_dict = {'input_text': 'hey'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to have burgers or japanese food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i get katong laksa around here?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'any good tonkatsu or yakitori place nearby?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where is a good place for french food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'got any places serving fish & chips in shenton way'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'what food is good and cheap near simei'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'get me some hot and spicy chicken wings'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'any place serving good porterhouse steaks in marina bay?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'recommend an Australian barbecue restaurant'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i get authentic seafood paella in city hall'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'any place serving blue mountain coffee?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'Recommend a spanish tapas place near bugis'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i find cheap szechuan food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to eat salad today'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want a different food place, please recommend?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'when is the best time to go for lunch in CBD?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to eat bak kut teh'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'my boss bringing us out for chilli crab or black pepper crab, quick recommend a place'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want hawker stalls selling western food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i find fish head curry in little india'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to have japanese monster curry rice today'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'I am going to Jurong East. Recommend a place for chinese food'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i get the best roti plata in kovan'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'lazy to think what to eat today. recommend anything'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'i want to have beef horfun today'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i get penang char koay teow around dhoby ghaut'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'let us go for pipa duck today'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'my friend suggest to go for chicken rice. where is the nearest place?'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+#
+# parsed_dict = {'input_text': 'where can i get pork knuckles with beer the german way'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))

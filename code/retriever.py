@@ -16,6 +16,7 @@ class Retriever:
     _db_path = '../database/jiakbot.db'
 
     retrieved_biz_id = []
+    retrieved_biz_type = [] # keeps track of whether the biz_id was found via food or cuisine
 
     def get_business_by_food(self,parsed_dict,state): # guaranteed to be different each time
 
@@ -52,9 +53,10 @@ class Retriever:
         business['biz_name'] = result[1] #  biz_name
         business['category'] = result[2] #  the type of food they serve
         business['rating'] = result[3]  # rating
-        business['statement'] = self.get_random_similar_stmt(biz_id)
+        business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
         self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz_type.extend(['food'])
 
         return business
 
@@ -98,10 +100,11 @@ class Retriever:
         business['statement'] = self.get_random_similar_stmt(biz_id)
 
         self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz_type.extend(['cuisine'])
 
         return business
 
-    def get_random_business(self):
+    def get_random_business(self,parsed_dict):
 
         business = {
             'biz_id': '',
@@ -132,13 +135,14 @@ class Retriever:
         business['biz_name'] = result[1]  # biz_name
         business['category'] = result[2]  # the type of food they serve
         business['rating'] = result[3]  # rating
-        business['statement'] = self.get_random_similar_stmt(biz_id)
+        business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
         self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz_type.extend(['random'])
 
         return business
 
-    def get_random_similar_stmt(self,biz_id):
+    def get_random_similar_stmt(self,parsed_dict,biz_id):
 
         statement = ''
 

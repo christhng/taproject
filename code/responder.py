@@ -23,7 +23,6 @@ about_bot_responses_path = config['file_path']['about_bot_responses']
 about_user_responses_path = config['file_path']['about_user_responses']
 generic_resp_path = config['file_path']['generic_response_corpus']
 yes_response_path = config['file_path']['yes_response_corpus']
-no_response_path = config['file_path']['no_response_corpus']
 question_to_feedback_path = config['file_path']['question_to_feedback_corpus']
 response_to_rhetoric_path = config['file_path']['rhetoric_response_corpus']
 further_probe_path = config['file_path']['further_probe_corpus']
@@ -37,7 +36,6 @@ about_user_response_data = json.load(open(about_user_responses_path))
 generic_corpus_data = json.load(open(generic_resp_path))
 yes_or_no_data = json.load(open(yes_or_no_path))
 yes_response_data = json.load(open(yes_response_path))
-no_response_data = json.load(open(no_response_path))
 question_to_feedback_data = json.load(open(question_to_feedback_path))
 response_to_rhetoric_data = json.load(open(response_to_rhetoric_path))
 further_probe_data = json.load(open(further_probe_path))
@@ -50,7 +48,8 @@ greetings = {
 for g in greeting_data['greetings']:
     greetings["greetings"][g[0].lower()] = g[1]
 
-
+# Responder
+# ------------------------------------------------------------------------------
 class Responder:
     """
     Reponse constructor class
@@ -73,9 +72,7 @@ class Responder:
     user_references = user_references_data['about_user']
     # sort yes_or_no_data into respective dicts
     yes_words = yes_or_no_data['yes']
-    no_words = yes_or_no_data['no']
     yes_response = yes_response_data['yes_response']
-    no_response = no_response_data['no_response']
     # responses to questions user asks when bot asks for feedback
     question_to_feedback = question_to_feedback_data['question']
     # rhetoric responses
@@ -105,48 +102,44 @@ class Responder:
             parsed_dict=parsed_dict,
             input_type=input_type
             ).construct()
+        retriever = Retriever()
 
+        # check for different conditions to override default response
         if input_type == 'rhetoric':
             response = self._construct_response_to_rhetoric(parsed_dict)
         elif len(state['locations']) > 0:
             if state['locations'][0] not in valid_locations and state['locations'][0] in StateMachine().known_locations:
+                # if user mentions location that is not within the valid locations
                 response = "Sorry, sir - Jiakbot is not that well travelled."
             elif state['locations'][0] in valid_locations and state['locations'][0] in StateMachine().known_locations:
-                response_dict = self._construct_response_from_db(state, parsed_dict, anything=True)
+                # if user mentions a location that is valid
+                response_dict = self._construct_response_from_db(state, parsed_dict, retriever, random=True)
                 response = response_dict['response']
                 retrieved = response_dict['retrieved']
                 state['retrieved'] = retrieved
-                state['recommendations'] = response_dict['recommendations']
         elif state['retrievable']:
         # if retrievable go retrieve the biz name, location and 1 line of review
-            response_dict = self._contruct_response_from_db(state, parsed_dict)
+            response_dict = self._construct_response_from_db(state, parsed_dict, retriever)
             response = response_dict['response']
             retrieved = response_dict['retrieved']
             state['retrieved'] = retrieved
-            state['recommendations'] = response_dict['recommendations']
         # detect if previous statement was a recommendation
         elif state['retrieved']:
             # if bot is asking for a feedback
             # pass input_type to constructor
-            r = self._construct_response_to_feedback(parsed_dict, input_type, state)
+            r = self._construct_response_to_feedback(parsed_dict, input_type, state, retriever)
             response = r['response']
             state['retrieved'] =  r['retrieved'] # reset retrieved status
-            state['post_feedback'] = r['post_feedback']
-            state['recommendations'] = r['recommendations']
-        elif state['post_feedback'] and input_type != 'question':
-            # construct a response for the user's input right after the bot
-            # has responded to the user's feedback about the most recent
-            # recommendation
-            r = self._construct_response_to_post_feedback(parsed_dict, input_type, state)
-            # construct response
-            response = r['response']
-            state['post_feedback'] = r['post_feedback']
-            state['recommendations'] = r['recommendations']
+
+        if state['retrieved']:
+            state['cuisines'] = []
+            state['foods'] = []
+            state['locations'] = []
 
         return response
 
 
-    def _contruct_response_from_db(self, state, parsed_dict):
+    def _construct_response_from_db(self, state, parsed_dict, retriever, random=False):
         """
         Response generated from a result that was successfully
         retrieved using Retriever
@@ -156,30 +149,40 @@ class Responder:
             parsed_dict (dict) - Dictionary passed from Parser object
         """
 
-        retriever = Retriever()
-        result = retriever.get_result(state, parsed_dict)
+        result = retriever.get_random_business(parsed_dict)
+        if not random:
+            result = self._get_result_from_db(state, parsed_dict, retriever)
 
         # check if any results are returned
-        if not result['biz_name']:
+        try:
+            if not result['biz_name']:
+                response = 'Sorry, I wasn\'t able to find anything relevant! Try something else.'
+                state['cuisines'] = []
+                state['foods'] = []
+                state['locations'] = []
+                retrieved = False
+            else:
+                response = "You can try {0}. " \
+                           "They serve {1}. " \
+                           "Here's a statement someone made for {2}:\n{3} \n" \
+                           "Here's a full review, " \
+                           "if you bothered to read: \n{4}\n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['category'],
+                                                                      result['biz_name'],
+                                                                      result['statement'],
+                                                                      result['rating'])
+                retrieved = True
+        except TypeError: # if result is empty
             response = 'Sorry, I wasn\'t able to find anything relevant! Try something else.'
+            state['cuisines'] = []
+            state['foods'] = []
+            state['locations'] = []
             retrieved = False
-        else:
-            response = "You can try {0}. " \
-                       "They serve {1}. " \
-                       "Here's a statement someone made for {2}:\n{3} \n" \
-                       "Here's a full review, " \
-                       "if you bothered to read: \n{4}\n" \
-                       "Is this what you are looking for?".format(result['biz_name'],
-                                                                  result['category'],
-                                                                  result['biz_name'],
-                                                                  result['statement'],
-                                                                  result['review'])
-            state['recommendations'].append(result['biz_name'])
-            retrieved = True
         # prepare response
-        return {'response': response, 'retrieved': retrieved, 'recommendations': state['recommendations']}
+        return {'response': response, 'retrieved': retrieved}
 
-    def _construct_response_to_feedback(self, parsed_dict, input_type, state):
+    def _construct_response_to_feedback(self, parsed_dict, input_type, state, retriever):
         """
         Response generated in response to feedback given to a
         prior recommendation.
@@ -189,15 +192,17 @@ class Responder:
         """
         # If bot asked for feedback and user, in turn, asked a question back
         retrieved = True
-        post_feedback = False
         # default response
         response = "Wah I don't understand sia, can just let me know whether my recommendation useful or not?"
         # check for intent
         intent = self._check_post_feedback_intent(parsed_dict)
-        recommendations = state['recommendations']
         if intent == 'further_probe':
-            retriever = Retriever()
-            result = retriever.get_result(state, parsed_dict, recommendations)
+            if retriever.retrieved_biz_type[-1] == 'food':
+                result = retriever.get_business_by_food(parsed_dict,state)
+            elif retriever.retrieved_biz_type[-1] == 'cuisine':
+                result = retriever.get_business_by_cuisine(parsed_dict,state)
+            # elif retriever.retrieved_biz_type[-1] == 'both':
+            #     result = retriever.get_business_by_both(parsed_dict, state)
             if result['biz_name']:
                 response = "Ok, maybe you can try {0} instead! " \
                            "They serve {1}. " \
@@ -208,13 +213,11 @@ class Responder:
                                                                       result['category'],
                                                                       result['biz_name'],
                                                                       result['statement'],
-                                                                      result['review'])
-                recommendations.append(result['biz_name'])
+                                                                      result['rating'])
             else:
                 # no other suggestions
                 response = "Sorry I can't find anything else liao!"
                 retrieved = False
-                post_feedback = True
         elif input_type == 'question':
             response = random.choice(self.question_to_feedback)
         # If user gave a response that could be understood as 'yes' or 'no'
@@ -223,49 +226,30 @@ class Responder:
                 if w in self.yes_words:
                     response = random.choice(self.yes_response)
                     retrieved = False
-                    post_feedback = True
-                elif w in self.no_words:
-                    response = random.choice(self.no_response)
-                    retrieved = False
-                    post_feedback = True
-        return {'response': response, 'retrieved': retrieved, 'post_feedback': post_feedback, 'recommendations': recommendations}
+        return {'response': response, 'retrieved': retrieved}
 
-    def _construct_response_to_post_feedback(self, parsed_dict, input_type, state):
-        """
-        Response to user's input. This is only for the conversation immediately
-        after the user's response to the bot's request for feedback.
 
-        In this case, the feedback MUST have already been retrieved. This is
-        the final step before state machine resets
-        """
-        post_feedback = True
-        intent = self._check_post_feedback_intent(parsed_dict)
-        if intent == 'further_probe':
-            recommendations = state['recommendations']
-            retriever = Retriever()
-            result = retriever.get_result(state, parsed_dict, recommendations)
-            response = "You can try {0}. " \
-                       "They serve {1}. " \
-                       "Here's a statement someone made for {2}:\n{3} \n" \
-                       "Here's a full review, " \
-                       "if you bothered to read: \n{4}\n" \
-                       "Is this what you are looking for?".format(result['biz_name'],
-                                                                  result['category'],
-                                                                  result['biz_name'],
-                                                                  result['statement'],
-                                                                  result['review'])
-            recommendations = recommendations.append(result['biz_name'])
-        elif intent == 'reset':
-            # get topic from parsed_dict - greeting, bot, user
-            topic = self._get_topic(parsed_dict)
-            response = AlternativeResponder(
-                parsed_topic=topic,
-                parsed_dict=parsed_dict,
-                input_type=input_type
-                ).construct()
-            post_feedback = False
-            recommendations = []
-        return {'response': response, 'post_feedback': post_feedback, 'recommendations': recommendations}
+    def _get_result_from_db(self, state, parsed_dict, retriever):
+        query_type = self._get_db_query_type(state)
+        if not query_type:
+            result = retriever.get_random_business(parsed_dict)
+        elif query_type == 'foods':
+            result = retriever.get_business_by_food(parsed_dict, state)
+        elif query_type == 'cuisines':
+            result = retriever.get_business_by_cuisine(parsed_dict, state)
+        # elif query_type == 'both':
+        #     result = retriever.get_business_by_both(parsed_dict, state)
+        return result
+
+    def _get_db_query_type(self, state):
+        if len(state['foods']) > 0 and not len(state['cuisines']) > 0:
+            return 'foods'
+        elif not len(state['foods']) > 0 and len(state['cuisines']) > 0:
+            return 'cuisines'
+        elif len(state['foods']) > 0 and len(state['cuisines']) > 0:
+            return 'both'
+        else:
+            return None
 
     def _check_post_feedback_intent(self, parsed_dict):
         for w in parsed_dict['tokens']:
