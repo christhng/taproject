@@ -13,137 +13,159 @@ stop_list = nltk.corpus.stopwords.words('english')
 
 class Retriever:
 
-    db_path = '../database/jiakbot.db'
+    _db_path = '../database/jiakbot.db'
 
-    def get_result(self,state,parsed_dict,previous_recommendation=[],anything=False):
+    retrieved_biz_id = []
 
-        result = {
-            'biz_id':'',
-            'biz_name':'',
-            'biz_location':'',
-            'category':'',
-            'review':'',
-            'statement':'',
-            'rating':'',
-            'has_result':False
+    def get_business_by_food(self,parsed_dict,state): # guaranteed to be different each time
+
+        business = {
+            'biz_id': '',
+            'biz_name': '',
+            'category': '',
+            'statement': '',
+            'rating': ''
         }
 
-        conn = sqlite3.connect(self.db_path)
+        # set requested food for retrieval
+        requested_food = state['foods'][len(state['foods'])-1] if len(state['foods']) > 0 else ''
+
+        exclude_str = self._get_biz_id_exclude_str()
+
+        sql_str = "SELECT b.biz_id, b.biz_name, f.food, b.biz_rating FROM businesses b " \
+                  "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                  "WHERE lower(f.food) LIKE '%{0}%'".format(requested_food) + " " + \
+                  exclude_str + " " + \
+                  "ORDER BY b.biz_rating DESC LIMIT 1;"
+
+        # connect and get the result
+        conn = sqlite3.connect(self._db_path)
         c = conn.cursor()
-
-        # select most recent food input from the state object
-        food = None
-        if len(state['foods']) > 0:
-            food = state['foods'][0]
-
-        # select most recent cuisine input from the state object
-        cuisine = None
-        if len(state['cuisines']) > 0:
-            cuisine = state['cuisines'][0]
-        existing_recommendations = ""
-        if previous_recommendation:
-            existing_recommendations = " AND b.biz_name NOT IN (" + ",".join('"' + rec + '"' for rec in previous_recommendation) + ") "
-            foods = [session['foods'][0] if len(session['foods']) > 0 else '' for session in state['session'].values()]
-            cuisines = [session['cuisines'][0] if len(session['cuisines']) > 0 else '' for session in state['session'].values()]
-            if len(foods) > 0:
-                foods.reverse()
-                try:
-                    food = next(f for f in foods if f)
-                except StopIteration:
-                    pass
-            if len(cuisines) > 0:
-                cuisines.reverse()
-                try:
-                    cuisine = next(c for c in cuisines if c)
-                except StopIteration:
-                    pass
-
-        if existing_recommendations and food:
-            # based on state (which contains food, cuisine, location) get 1 business that matches
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "WHERE lower(f.food) LIKE '%{0}%'".format(food) + existing_recommendations + \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;"
-        elif existing_recommendations and cuisine:
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
-                      "WHERE lower(c.cuisine) LIKE '%{0}%'".format(cuisine) + existing_recommendations + \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;"
-        elif existing_recommendations and food and cuisine:
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
-                      "WHERE lower(c.cuisine) LIKE '%{0}%' OR lower(f.food) LIKE '%{1}%' ".format(food, cuisine) + existing_recommendations + \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;"
-        elif food and not cuisine:
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "WHERE lower(f.food) LIKE '%{0}%' " \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(food)
-        elif not food and cuisine:
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
-                      "WHERE lower(c.cuisine) LIKE '%{0}%' " \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(cuisine)
-        elif food and cuisine:
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
-                      "WHERE lower(c.cuisine) LIKE '%{0}%' OR lower(f.food) LIKE '%{1}%' " \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;".format(food, cuisine)
-
-        if anything:
-            # override everything and pick any random food place
-            sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
-                      "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
-                      "ORDER BY b.biz_rating DESC LIMIT 10;"
-
-        # get the business details for the food
         c.execute(sql_str)
-        businesses = c.fetchall()
+        result = c.fetchone()
+        conn.close()
 
-        if len(businesses) == 0:
-            c.close()
-            return result
+        if result is None: return
 
-        # randomly select a result based on results
-        selected_biz = businesses[random.randint(0,len(businesses))]
+        biz_id = result[0]
+        business['biz_id'] = result[0]  #  biz_id
+        business['biz_name'] = result[1] #  biz_name
+        business['category'] = result[2] #  the type of food they serve
+        business['rating'] = result[3]  # rating
+        business['statement'] = self.get_random_similar_stmt(biz_id)
 
-        biz_id = selected_biz[0]
-        result['biz_id'] = selected_biz[0]  # 0 corresponds to column 1 which is the biz_id
-        result['biz_name'] = selected_biz[1] # 1 corresponds to column 2 of the result which is biz_name
-        result['category'] = selected_biz[2] # 2 corresponds to column 3.. the type of food they serve
+        self.retrieved_biz_id.extend([biz_id])
 
-        # --------------------------------------------------------------------
-        # based on jaccard, levenshtein or cosine similarity get 1 comment
-        # added code based on cosine similarity to retrieve list of reviews based on biz_id
+        return business
 
-        # Step 1: Fetch all the statements based on biz_id
-        # --------------------------------------------------------------------------
+
+    def get_business_by_cuisine(self,parsed_dict,state): # guaranteed to be different each time
+
+        business = {
+            'biz_id': '',
+            'biz_name': '',
+            'category': '',
+            'statement': '',
+            'rating': ''
+        }
+
+        # set requested food for retrieval
+        requested_cuisine = state['cuisines'][len(state['cuisines']) - 1] if len(state['cuisines']) > 0 else ''
+
+        exclude_str = self._get_biz_id_exclude_str()
+
+        sql_str = "SELECT b.biz_id, b.biz_name, f.food, b.biz_rating FROM businesses b " \
+                  "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                  "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                  "WHERE lower(c.cuisine) LIKE '%{0}%' ".format(requested_cuisine) + \
+                  exclude_str + " " + \
+                  "ORDER BY b.biz_rating DESC LIMIT 10;"
+
+        # connect and get the result
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
+        c.execute(sql_str)
+        result = c.fetchone()
+        conn.close()
+
+        if result is None: return
+
+        biz_id = result[0]
+        business['biz_id'] = result[0]  # biz_id
+        business['biz_name'] = result[1]  # biz_name
+        business['category'] = result[2]  # the type of food they serve
+        business['rating'] = result[3]  # rating
+        business['statement'] = self.get_random_similar_stmt(biz_id)
+
+        self.retrieved_biz_id.extend([biz_id])
+
+        return business
+
+    def get_random_business(self):
+
+        business = {
+            'biz_id': '',
+            'biz_name': '',
+            'category': '',
+            'statement': '',
+            'rating': ''
+        }
+
+        exclude_str = self._get_biz_id_exclude_str()
+
+        sql_str = "SELECT b.biz_id, b.biz_name, f.food, b.biz_rating FROM businesses b " \
+                  "LEFT JOIN foods f ON b.biz_id = f.biz_id WHERE 1 = 1 " + \
+                  exclude_str + " " + \
+                  "ORDER BY b.biz_rating DESC LIMIT 1;"
+
+        # connect and get the result
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
+        c.execute(sql_str)
+        result = c.fetchone()
+        conn.close()
+
+        if result is None: return
+
+        biz_id = result[0]
+        business['biz_id'] = result[0]  # biz_id
+        business['biz_name'] = result[1]  # biz_name
+        business['category'] = result[2]  # the type of food they serve
+        business['rating'] = result[3]  # rating
+        business['statement'] = self.get_random_similar_stmt(biz_id)
+
+        self.retrieved_biz_id.extend([biz_id])
+
+        return business
+
+    def get_random_similar_stmt(self,biz_id):
+
+        statement = ''
+
+        # Step 1: Select all statements
         sql_str = "SELECT r.biz_id, r.description, s.stmt FROM reviews r " \
                   "LEFT JOIN stmts s ON r.review_id = s.review_id " \
                   "WHERE r.biz_id = '{0}';".format(biz_id)
-        #
-        # c.execute(sql_str)
-        # results = c.fetchall()
+
 
         results = []
         tokenized_docs = []
-        processed_docs = []
+
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
 
         for row in c.execute(sql_str):
             doc = word_tokenize(row[2])
             tokenized_docs.append(doc)
             results.append(row)
 
+        conn.close()
+
         processed_docs = [[w.lower() for w in doc] for doc in tokenized_docs]
         processed_docs = [[w for w in doc if re.search('^[a-z]+$', w)] for doc in processed_docs]
         processed_docs = [[w for w in doc if w not in stop_list] for doc in processed_docs]
 
         # Step 2: Select most similar review based on query using cosine similarity
-        # --------------------------------------------------------------------------
 
         reviews = corpora.Dictionary(processed_docs)
 
@@ -160,15 +182,42 @@ class Retriever:
         q_sims = r_index[query_vec_tfidf]
         q_sorted_sims = sorted(enumerate(q_sims), key=lambda item: -item[1])
 
-        # print( q_sorted_sims )
-
-        # Step 3: Return most relevant review back
-        # --------------------------------------------------------------------------
-
+        # Step 3: Return most relevant statement back
         most_similar_stmt_id = q_sorted_sims[0][0]
-        result['review'] = results[most_similar_stmt_id][1]
-        result['statement'] = results[most_similar_stmt_id][2]
+        statement = results[most_similar_stmt_id][2]
 
-        c.close()
+        return statement
 
-        return result
+    def _get_biz_id_exclude_str(self):
+        str = ''
+
+        if len(self.retrieved_biz_id) > 0:
+            biz_ids_str = ",".join('"' + biz_id + '"' for biz_id in self.retrieved_biz_id)
+            str = "AND b.biz_id NOT IN ("+ biz_ids_str + ")"
+
+        return str
+
+########################################################
+# for testing purposes
+########################################################
+#
+# r = Retriever()
+# state = {'current_state': [1, 1, 0],
+#          'retrievable': True,
+#          'post_feedback': False,
+#          'previous_state': [1, 1, 0],
+#          'recommendations': [],
+#          'cuisines': ['japanese'],
+#          'locations': [],
+#          'retrieved': False,
+#          'foods': ['burgers']}
+#
+# parsed_dict = {'tokens': ['you', 'know', 'of', 'any', 'place', 'for', 'japanese', 'or', 'sells', 'burgers', '?']}
+# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
+# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
+# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
+# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
+# print(r.get_business_by_cuisine(parsed_dict=parsed_dict, state=state))
+# print(r.get_random_business())
+#
+# print(r.retrieved_biz_id)

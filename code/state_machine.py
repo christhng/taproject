@@ -69,7 +69,8 @@ class StateMachine:
             leaves = subtree.leaves()
             food_cuisines = [w for (w, t) in leaves if re.search(r"(JJ.*|RB|NN.*)", t) and w not in self.non_food_words]
             food_cuisines = ' '.join(food_cuisines)
-            identified_food_cuisines.append(food_cuisines)
+            if food_cuisines != '':
+                identified_food_cuisines.append(food_cuisines)
 
         # ----------------------------------------------------------------------------
         # identifying location
@@ -127,8 +128,10 @@ class StateMachine:
         # Update state
         self.state['previous_state'] = self.state['current_state']
         input_num = 1
+
         if self.state['session'].keys():
             input_num = max(self.state['session'].keys()) + 1
+
         self.state['session'][input_num] = {
             'foods': self.state['foods'],
             'cuisines': self.state['cuisines'],
