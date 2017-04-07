@@ -200,7 +200,7 @@ class Retriever:
 ########################################################
 # for testing purposes
 ########################################################
-#
+
 # r = Retriever()
 # state = {'current_state': [1, 1, 0],
 #          'retrievable': True,
