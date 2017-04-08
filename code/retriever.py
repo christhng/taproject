@@ -104,6 +104,51 @@ class Retriever:
 
         return business
 
+    def get_business_by_food_cuisine(self,parsed_dict,state): # guaranteed to be different each time
+
+        business = {
+            'biz_id': '',
+            'biz_name': '',
+            'category': '',
+            'statement': '',
+            'rating': ''
+        }
+
+        # set requested food for retrieval
+        requested_food = state['foods'][len(state['foods'])-1] if len(state['foods']) > 0 else ''
+        requested_cuisine = state['cuisines'][len(state['cuisines']) - 1] if len(state['cuisines']) > 0 else ''
+
+        exclude_str = self._get_biz_id_exclude_str()
+
+        sql_str = "SELECT b.biz_id, b.biz_name, f.food FROM businesses b " \
+                  "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                  "LEFT JOIN cuisines c ON b.biz_id = c.biz_id " \
+                  "WHERE lower(c.cuisine) LIKE '%{0}%' " \
+                  "OR lower(f.food) LIKE '%{1}%' ".format(requested_food, requested_cuisine) + " " + \
+                  exclude_str + " " + \
+                  "ORDER BY b.biz_rating DESC LIMIT 1;"
+
+        # connect and get the result
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
+        c.execute(sql_str)
+        result = c.fetchone()
+        conn.close()
+
+        if result is None: return
+
+        biz_id = result[0]
+        business['biz_id'] = result[0]  #  biz_id
+        business['biz_name'] = result[1] #  biz_name
+        business['category'] = result[2] #  the type of food they serve
+        business['rating'] = result[3]  # rating
+        business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
+
+        self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz_type.extend(['food_cuisine'])
+
+        return business
+
     def get_random_business(self,parsed_dict):
 
         business = {
