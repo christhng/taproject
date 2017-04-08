@@ -3,14 +3,12 @@ from nltk import pos_tag
 from nltk.corpus import stopwords
 from sklearn.externals import joblib
 
-import os
 import re
 import numpy as np
 
 class JiakBotParser:
 
-    model_path = os.path.realpath('bot/jiak_models/question_model.pkl')
-    question_clf = joblib.load(model_path)
+    question_clf = joblib.load('bot/jiak_models/question_model.pkl')
 
     def parse_input(self, user_input):
         parsed_dict = {'tokens': word_tokenize(user_input.lower()),
@@ -89,7 +87,7 @@ class JiakBotParser:
 # jbp = JiakBotParser()
 # jbp.parse_input("why would i care?")
 # jbp.parse_input("where can i find good noodles?")
-# jbp.parse_input("I don't know what is in the sauce (light colored and very minimal) but it sure packed a punch.")
+# print(jbp.parse_input("you know of any place for japanese or sells burgers?"))
 # jbp.parse_input("chicken rice nice or not?")
 # jbp.parse_input("what is nice at raffles place?")
 # jbp.parse_input("can you recommend where to find good coffee")

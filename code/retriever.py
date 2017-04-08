@@ -97,7 +97,7 @@ class Retriever:
         business['biz_name'] = result[1]  # biz_name
         business['category'] = result[2]  # the type of food they serve
         business['rating'] = result[3]  # rating
-        business['statement'] = self.get_random_similar_stmt(biz_id)
+        business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
         self.retrieved_biz_id.extend([biz_id])
         self.retrieved_biz_type.extend(['cuisine'])

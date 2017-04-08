@@ -92,7 +92,7 @@ case9_sentences[6] = "whatever.."  # bot: "acknowledge + further probe"
 
 # PARAMETERS:
 # ---------------------------------------------
-bot_mode = 'test' # live
+bot_mode = 'live' # live
 test_sentences = case1_sentences # case2_sentences
 
 # jiakbot code
