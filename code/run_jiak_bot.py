@@ -45,9 +45,9 @@ case5_sentences[0] = "hello!"  # bot: "greeting + question"
 case5_sentences[1] = "hmm, i want to eat chicken rice which is chinese cuisine i guess?"  # bot: "acknowledge + review + satisfied?"
 case5_sentences[2] = "do you have another restaurant? i don't like that place"  # bot: "acknowledge + further probe"
 case5_sentences[3] = "restaurant"  # bot: "acknowledge + review + satisfied?"
-case5_sentences[4] = "actually, i changed my mind, i want eat japanese ramen, got any nice places?"  # bot: "acknowledge + further probe"
+case5_sentences[4] = "actually, i changed my mind, i want to eat ramen, got any nice places?"  # bot: "acknowledge + further probe"
 case5_sentences[5] = "no"  # bot: "acknowledge + further probe"
-case5_sentences[6] = "woops, type wrong. change food, i want japanese ramen la"  # bot: "acknowledge + review + satisfied?"
+case5_sentences[6] = "woops, type wrong. change food, i want to eat ramen la"  # bot: "acknowledge + review + satisfied?"
 case5_sentences[7] = "yes"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 6)

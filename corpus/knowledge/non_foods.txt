@@ -1,4 +1,10 @@
 food
+hey
+hi
+yo
+wassup
+whats up
+hello
 good
 nice
 best
@@ -21,6 +27,39 @@ cheap
 near
 nearest
 time
+lol
+holy shit
+shit
+holy
+la
+lah
+lor
+sia
+siol
+siok
+shiok
+meh
+hehe
+haha
+hahaha
+ha
+leh
+le
+loh
+cool
+change
+idiot
+superman
+kind
+rubbish recommendation
+rubbish
+recommendation
+nope
+zzz
+bro
+erm
+lo
+type
 top
 a
 able

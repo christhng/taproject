@@ -49,7 +49,7 @@ class StateMachine:
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
-                {<NN.*>+<VBP>+}
+                {<NN.*>+<VBP>?}
         """
 
         cp = nltk.RegexpParser(grammar)
@@ -116,7 +116,7 @@ class StateMachine:
 
             f_grammar = r"""
                     FP:
-                        {<NN.*>+<NN.*>+}
+                        {<JJ>?<NN.*>+}
                 """
 
             fcp = nltk.RegexpParser(f_grammar)

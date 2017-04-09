@@ -1,5 +1,6 @@
 American
 Argentine
+Asian
 Asian Fusion
 Australian
 Austrian
@@ -16,8 +17,10 @@ French
 German
 Greek
 Hainan
+Hainanese
 Hawaiian
-Himalayan/Nepalese
+Himalayan
+Nepalese
 Hokkien
 Indian
 Indonesian
@@ -28,6 +31,7 @@ Japanese
 Korean
 Latin American
 Lebanese
+Malay
 Malaysian
 Mediterranean
 Mexican
@@ -52,3 +56,4 @@ Vegan
 Vegetarian
 Vietnamese
 Western Style Japanese Food
+Western
