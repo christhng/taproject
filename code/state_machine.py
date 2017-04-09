@@ -176,10 +176,10 @@ class StateMachine:
 
 sm = StateMachine()
 
-parsed_dict = {'input_text': 'I want to eat at Raffles Place'}
-sm.update_state(parsed_dict=parsed_dict)
-print('original statement:', parsed_dict['input_text'])
-print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# parsed_dict = {'input_text': 'I want to eat at Raffles Place'}
+# sm.update_state(parsed_dict=parsed_dict)
+# print('original statement:', parsed_dict['input_text'])
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
 
 # parsed_dict = {'input_text': 'i want to have burgers or japanese food'}
 # sm.update_state(parsed_dict=parsed_dict)

@@ -162,19 +162,16 @@ class Responder:
                 state['locations'] = []
                 retrieved = False
             else:
-                response = "You can try {0}. " \
-                           "They serve {1}. " \
-                           "Here's a statement someone made for {2}:\n{3} \n" \
-                           "Here's a full review, " \
-                           "if you bothered to read: \n{4}\n" \
+                response = "You can try {0}, it is rated {3} on our database. " \
+                           "They serve {1}. \n" \
+                           "One of our reviewers commented: \"{2}\". \n" \
                            "Is this what you are looking for?".format(result['biz_name'],
                                                                       result['category'],
-                                                                      result['biz_name'],
                                                                       result['statement'],
                                                                       result['rating'])
                 retrieved = True
         except TypeError: # if result is empty
-            response = 'Sorry, I wasn\'t able to find anything relevant! Try something else.'
+            response = 'Sorry, I wasn\'t able to find {0} in our database, would you rather try something else?'.format(state['foods'][0])
             state['cuisines'] = []
             state['foods'] = []
             state['locations'] = []
