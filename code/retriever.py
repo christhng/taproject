@@ -237,6 +237,32 @@ class Retriever:
 
         return statement
 
+    def get_similar_business(self,food):
+        other_foods = []
+
+        exclude_str = self._get_biz_id_exclude_str()
+
+        sql_str = "SELECT DISTINCT b.biz_id, b.biz_name, f.food, b.biz_rating FROM businesses b " \
+                  "LEFT JOIN foods f ON b.biz_id = f.biz_id " \
+                  "LEFT JOIN reviews r ON b.biz_id = r.biz_id " \
+                  "WHERE 1 = 1 " \
+                  "AND r.description LIKE '%{0}%' " \
+                  "AND f.food NOT LIKE '%{0}%'".format(food) + " " + \
+                  exclude_str + " " + \
+                  "ORDER BY b.biz_rating DESC LIMIT 5;"
+
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
+
+        # connect and get the result
+        conn = sqlite3.connect(self._db_path)
+        c = conn.cursor()
+
+        for row in c.execute(sql_str):
+            other_foods.append(row[1])
+
+        return other_foods # here are some businesses that might sell burgers... which one do you want to find out more?
+
     def _get_biz_id_exclude_str(self):
         str = ''
 
@@ -250,23 +276,17 @@ class Retriever:
 # for testing purposes
 ########################################################
 
-# r = Retriever()
-# state = {'current_state': [1, 1, 0],
-#          'retrievable': True,
-#          'post_feedback': False,
-#          'previous_state': [1, 1, 0],
-#          'recommendations': [],
-#          'cuisines': ['japanese'],
-#          'locations': [],
-#          'retrieved': False,
-#          'foods': ['burgers']}
-#
-# parsed_dict = {'tokens': ['you', 'know', 'of', 'any', 'place', 'for', 'japanese', 'or', 'sells', 'burgers', '?']}
+r = Retriever()
+state = {'current_state': [1, 1, 0],
+         'retrievable': True,
+         'post_feedback': False,
+         'previous_state': [1, 1, 0],
+         'recommendations': [],
+         'cuisines': ['japanese'],
+         'locations': [],
+         'retrieved': False,
+         'foods': ['burgers']}
+
+parsed_dict = {'tokens': ['you', 'know', 'of', 'any', 'place', 'for', 'japanese', 'or', 'sells', 'burgers', '?']}
 # print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
-# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
-# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
-# print(r.get_business_by_food(parsed_dict=parsed_dict, state=state))
-# print(r.get_business_by_cuisine(parsed_dict=parsed_dict, state=state))
-# print(r.get_random_business())
-#
-# print(r.retrieved_biz_id)
+# print(r.get_similar_business('burgers'))
