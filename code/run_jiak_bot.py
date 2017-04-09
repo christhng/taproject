@@ -6,7 +6,7 @@ from jiakbot import JiakBot
 case1_sentences = [None] * 5
 case1_sentences[0] = "Hey"  # bot: "Hello there. What would you like to eat today?"
 case1_sentences[1] = "I don't know"  # bot: "Where are you?"
-case1_sentences[2] = "I wanna eat at Raffles Place"  # bot: "What would you like to have?"
+case1_sentences[2] = "I want to eat at Raffles Place"  # bot: "What would you like to have?"
 case1_sentences[3] = "I want to have burgers"  # bot: There is a Ya Kun near Raffles Place...
 # bot: Some people say "It's the best kaya toast".
 # bot: is that correct?
@@ -92,7 +92,7 @@ case9_sentences[6] = "whatever.."  # bot: "acknowledge + further probe"
 
 # PARAMETERS:
 # ---------------------------------------------
-bot_mode = 'live' # live
+bot_mode = 'test' # live
 test_sentences = case1_sentences # case2_sentences
 
 # jiakbot code
