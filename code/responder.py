@@ -107,7 +107,7 @@ class Responder:
         # check for different conditions to override default response
         if input_type == 'rhetoric':
             response = self._construct_response_to_rhetoric(parsed_dict)
-        elif len(state['locations']) > 0:
+        elif len(state['locations']) > 0 and len(state['foods']) == 0:
             if state['locations'][0] not in valid_locations and state['locations'][0] in StateMachine().known_locations:
                 # if user mentions location that is not within the valid locations
                 response = "Sorry, sir - Jiakbot is not that well travelled."
