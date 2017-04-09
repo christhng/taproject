@@ -89,11 +89,38 @@ case9_sentences[4] = "no, what kind of rubbish recommendation is that?"  # bot: 
 case9_sentences[5] = "nope. You don't get me"  # bot: "acknowledge + further probe"
 case9_sentences[6] = "whatever.."  # bot: "acknowledge + further probe"
 
+# test sentences (use case 10)
+case10_sentences = [None] * 5
+case10_sentences[0] = "Hello!"  # bot: "greeting + question"
+case10_sentences[1] = "Recommend a tapas place near bugis"  # bot: "provide recommendations, if available"
+case10_sentences[2] = "That place is too expensive!! Please recommend another one?"
+# bot: "acknowledge + provide another recommendations"
+case10_sentences[3] = "how about other restaurant serving spanish cuisine"
+# bot: "provide recommendations" + is that correct?
+case10_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
+
+# test sentences (use case 11)
+case11_sentences = [None] * 5
+case11_sentences[0] = "Hey, wake up"  # bot: "greeting + question"
+case11_sentences[1] = "I'm super hungry"  # bot: "acknowledge + question"
+case11_sentences[2] = "Where can i get the best deal for buffet?"  # bot: "acknowledge + provide recommendations"
+#  bot: is that correct?
+case11_sentences[3] = "No"  # bot: "provide another recommendations" + is that correct?
+case11_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
+
+# test sentences (use case 12)
+case12_sentences = [None] * 4
+case12_sentences[0] = "Hi"  # bot: "greeting + question"
+case12_sentences[1] = "I want to eat japanese food"  # bot: "acknowledge + provide recommendations"
+case12_sentences[2] = "Recommend places which serve teppanyaki, or tonkatsu or yakitori at bras basah"
+# bot: "acknowledge + provide recommendations"
+#  bot: is that correct?
+case12_sentences[3] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 # PARAMETERS:
 # ---------------------------------------------
-bot_mode = 'live' # live
-test_sentences = case1_sentences # case2_sentences
+bot_mode = 'test' # live
+test_sentences = case12_sentences # case2_sentences
 
 # jiakbot code
 # ---------------------------------------------

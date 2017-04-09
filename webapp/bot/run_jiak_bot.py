@@ -6,7 +6,7 @@ from jiakbot import JiakBot
 case1_sentences = [None] * 5
 case1_sentences[0] = "Hey"  # bot: "Hello there. What would you like to eat today?"
 case1_sentences[1] = "I don't know"  # bot: "Where are you?"
-case1_sentences[2] = "I wanna eat at Raffles Place"  # bot: "What would you like to have?"
+case1_sentences[2] = "I want to eat at Raffles Place"  # bot: "What would you like to have?"
 case1_sentences[3] = "I want to have burgers"  # bot: There is a Ya Kun near Raffles Place...
 # bot: Some people say "It's the best kaya toast".
 # bot: is that correct?
@@ -45,9 +45,9 @@ case5_sentences[0] = "hello!"  # bot: "greeting + question"
 case5_sentences[1] = "hmm, i want to eat chicken rice which is chinese cuisine i guess?"  # bot: "acknowledge + review + satisfied?"
 case5_sentences[2] = "do you have another restaurant? i don't like that place"  # bot: "acknowledge + further probe"
 case5_sentences[3] = "restaurant"  # bot: "acknowledge + review + satisfied?"
-case5_sentences[4] = "actually, i changed my mind, i want eat japanese ramen, got any nice places?"  # bot: "acknowledge + further probe"
+case5_sentences[4] = "actually, i changed my mind, i want to eat ramen, got any nice places?"  # bot: "acknowledge + further probe"
 case5_sentences[5] = "no"  # bot: "acknowledge + further probe"
-case5_sentences[6] = "woops, type wrong. change food, i want japanese ramen la"  # bot: "acknowledge + review + satisfied?"
+case5_sentences[6] = "woops, type wrong. change food, i want to eat ramen la"  # bot: "acknowledge + review + satisfied?"
 case5_sentences[7] = "yes"  # bot: "acknowledge + departure greeting"
 
 # test sentences (use case 6)
@@ -89,11 +89,38 @@ case9_sentences[4] = "no, what kind of rubbish recommendation is that?"  # bot: 
 case9_sentences[5] = "nope. You don't get me"  # bot: "acknowledge + further probe"
 case9_sentences[6] = "whatever.."  # bot: "acknowledge + further probe"
 
+# test sentences (use case 10)
+case10_sentences = [None] * 5
+case10_sentences[0] = "Hello!"  # bot: "greeting + question"
+case10_sentences[1] = "Recommend a tapas place near bugis"  # bot: "provide recommendations, if available"
+case10_sentences[2] = "That place is too expensive!! Please recommend another one?"
+# bot: "acknowledge + provide another recommendations"
+case10_sentences[3] = "how about other restaurant serving spanish cuisine"
+# bot: "provide recommendations" + is that correct?
+case10_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
+
+# test sentences (use case 11)
+case11_sentences = [None] * 5
+case11_sentences[0] = "Hey, wake up"  # bot: "greeting + question"
+case11_sentences[1] = "I'm super hungry"  # bot: "acknowledge + question"
+case11_sentences[2] = "Where can i get the best deal for buffet?"  # bot: "acknowledge + provide recommendations"
+#  bot: is that correct?
+case11_sentences[3] = "No"  # bot: "provide another recommendations" + is that correct?
+case11_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
+
+# test sentences (use case 12)
+case12_sentences = [None] * 4
+case12_sentences[0] = "Hi"  # bot: "greeting + question"
+case12_sentences[1] = "I want to eat japanese food"  # bot: "acknowledge + provide recommendations"
+case12_sentences[2] = "Recommend places which serve teppanyaki, or tonkatsu or yakitori at bras basah"
+# bot: "acknowledge + provide recommendations"
+#  bot: is that correct?
+case12_sentences[3] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 # PARAMETERS:
 # ---------------------------------------------
 bot_mode = 'live' # live
-test_sentences = case1_sentences # case2_sentences
+test_sentences = case8_sentences # case2_sentences
 
 # jiakbot code
 # ---------------------------------------------

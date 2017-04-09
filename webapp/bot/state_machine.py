@@ -49,7 +49,7 @@ class StateMachine:
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
                 {<IN|TO><JJ.*>?<NN.*>+?}
-                {<NN.*>+<VBP>+}
+                {<NN.*>+<VBP>?}
         """
 
         cp = nltk.RegexpParser(grammar)
@@ -66,7 +66,7 @@ class StateMachine:
             food_cuisines = [w for (w, t) in leaves if re.search(r"(JJ.*|RB|NN.*)", t) and w not in self.non_food_words]
             food_cuisines = ' '.join(food_cuisines)
             if food_cuisines != '':
-                identified_food_cuisines.append(food_cuisines)
+                identified_food_cuisines.append(food_cuisines.lower())
 
         # ----------------------------------------------------------------------------
         # identifying location
@@ -78,7 +78,7 @@ class StateMachine:
             leaves = subtree.leaves()
             locations = [w for (w, t) in leaves if re.search(r"(JJ.*|NN.*|VB.*|RB)", t)]
             locations = ' '.join(locations)
-            identified_locations.append(locations)
+            identified_locations.append(locations.lower())
 
         # ----------------------------------------------------------------------------
         # for detected locations, check if its actually a food
@@ -102,7 +102,34 @@ class StateMachine:
                 food_cuisines = [w for (w,t) in leaves if re.search(r"(JJ|NN)", t) and w not in self.non_food_words]
                 food_cuisines = ' '.join(food_cuisines)
                 if food_cuisines != '':
-                    identified_food_cuisines.extend([food_cuisines])
+                    identified_food_cuisines.extend([food_cuisines.lower()])
+
+        # ----------------------------------------------------------------------------
+        # for detected locations, check if its actually a food
+        # ----------------------------------------------------------------------------
+
+        not_food = [food.lower() for food in identified_food_cuisines if food.lower() in self.known_locations]
+
+        if len(not_food) > 0:
+
+            retag = nltk.pos_tag(nltk.word_tokenize(', '.join(not_food)))
+
+            f_grammar = r"""
+                    FP:
+                        {<JJ>?<NN.*>+}
+                """
+
+            fcp = nltk.RegexpParser(f_grammar)
+            result = fcp.parse(retag)
+
+            for subtree in result.subtrees(filter=lambda t: t.label() == 'FP'):
+                leaves = subtree.leaves()
+                location = [w for (w, t) in leaves if re.search(r"(JJ|NN.*)", t)]
+                location = ' '.join(location)
+                if location != '':
+                    identified_food_cuisines.remove(location)
+                    identified_locations.extend([location.lower()])
+
 
         # ----------------------------------------------------------------------------
         # finalize the identified lists
@@ -147,13 +174,13 @@ class StateMachine:
 # for testing purposes
 ########################################################
 
-# sm = StateMachine()
-#
-# parsed_dict = {'input_text': 'hey'}
+sm = StateMachine()
+
+# parsed_dict = {'input_text': 'I want to eat at Raffles Place'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
 # print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-#
+
 # parsed_dict = {'input_text': 'i want to have burgers or japanese food'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])

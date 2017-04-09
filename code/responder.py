@@ -202,7 +202,7 @@ class Responder:
             #     result = retriever.get_business_by_both(parsed_dict, state)
             if result['biz_name']:
                 response = "Ok, maybe you can try {0} instead! " \
-                           "They serve {1}. " \
+                           "They serve {1}. \n" \
                            "Here's a statement someone made for {2}:\n{3} \n" \
                            "Here's a full review, " \
                            "if you bothered to read: \n{4}\n" \

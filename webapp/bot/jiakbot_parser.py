@@ -39,7 +39,7 @@ class JiakBotParser:
         parsed_dict['pronouns'] = [word for word, pos in tagged \
                                    if (pos == 'PRP' or pos == 'PRP$' or pos == 'WP' or pos == 'WP$')]
 
-
+        
         stop_list = stopwords.words('english')
         words = [w for w in parsed_dict['tokens'] if re.search('^[a-z]+$', w)]
         parsed_dict['cleansed_text'] = [w for w in words if w not in stop_list]
