@@ -207,14 +207,14 @@ class Responder:
         # default response
         response = "Wah I don't understand sia, can just let me know whether my recommendation useful or not?"
         # check for intent
-        intent = self._check_post_feedback_intent(parsed_dict)
-        if intent == 'further_probe':
+        further_probe = self._check_post_feedback_intent(parsed_dict)
+        if further_probe:
             if retriever.retrieved_biz_type[-1] == 'food':
                 result = retriever.get_business_by_food(parsed_dict,state)
             elif retriever.retrieved_biz_type[-1] == 'cuisine':
                 result = retriever.get_business_by_cuisine(parsed_dict,state)
-            # elif retriever.retrieved_biz_type[-1] == 'both':
-            #     result = retriever.get_business_by_both(parsed_dict, state)
+            elif retriever.retrieved_biz_type[-1] == 'food_cuisine':
+                result = retriever.get_business_by_food_cuisine(parsed_dict, state)
             if result['biz_name']:
                 response = "Ok, maybe you can try {0} instead! " \
                            "They serve {1}. \n" \
@@ -249,8 +249,8 @@ class Responder:
             result = retriever.get_business_by_food(parsed_dict, state)
         elif query_type == 'cuisines':
             result = retriever.get_business_by_cuisine(parsed_dict, state)
-        # elif query_type == 'both':
-        #     result = retriever.get_business_by_both(parsed_dict, state)
+        elif query_type == 'food_cuisine':
+            result = retriever.get_business_by_food_cuisine(parsed_dict, state)
         return result
 
     def _get_db_query_type(self, state):
@@ -259,15 +259,15 @@ class Responder:
         elif not len(state['foods']) > 0 and len(state['cuisines']) > 0:
             return 'cuisines'
         elif len(state['foods']) > 0 and len(state['cuisines']) > 0:
-            return 'both'
+            return 'food_cuisine'
         else:
             return None
 
     def _check_post_feedback_intent(self, parsed_dict):
         for w in parsed_dict['tokens']:
             if w in self.further_probe_words:
-                return 'further_probe'
-        return 'reset'
+                return True
+        return False
 
     def _get_topic(self, parsed_dict):
 
