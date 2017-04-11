@@ -15,7 +15,7 @@ class Retriever:
 
     _db_path = '../database/jiakbot.db'
 
-    retrieved_biz_id = []
+    retrieved_biz = []
     retrieved_biz_type = [] # keeps track of whether the biz_id was found via food or cuisine
 
     def get_business_by_food(self,parsed_dict,state): # guaranteed to be different each time
@@ -24,6 +24,7 @@ class Retriever:
             'biz_id': '',
             'biz_name': '',
             'category': '',
+            'cuisine': '',
             'statement': '',
             'rating': ''
         }
@@ -52,10 +53,11 @@ class Retriever:
         business['biz_id'] = result[0]  #  biz_id
         business['biz_name'] = result[1] #  biz_name
         business['category'] = result[2] #  the type of food they serve
+        business['cuisine'] = state['cuisines'][0] if len(state['cuisines']) > 0 else ''
         business['rating'] = result[3]  # rating
         business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
-        self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz.extend([business])
         self.retrieved_biz_type.extend(['food'])
 
         return business
@@ -67,6 +69,7 @@ class Retriever:
             'biz_id': '',
             'biz_name': '',
             'category': '',
+            'cuisine': '',
             'statement': '',
             'rating': ''
         }
@@ -96,10 +99,11 @@ class Retriever:
         business['biz_id'] = result[0]  # biz_id
         business['biz_name'] = result[1]  # biz_name
         business['category'] = result[2]  # the type of food they serve
+        business['cuisine'] = state['cuisines'][0] if len(state['cuisines']) > 0 else ''
         business['rating'] = result[3]  # rating
         business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
-        self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz.extend([business])
         self.retrieved_biz_type.extend(['cuisine'])
 
         return business
@@ -110,6 +114,7 @@ class Retriever:
             'biz_id': '',
             'biz_name': '',
             'category': '',
+            'cuisine': '',
             'statement': '',
             'rating': ''
         }
@@ -141,10 +146,11 @@ class Retriever:
         business['biz_id'] = result[0]  #  biz_id
         business['biz_name'] = result[1] #  biz_name
         business['category'] = result[2] #  the type of food they serve
+        business['cuisine'] = state['cuisines'][0] if len(state['cuisines']) > 0 else ''
         business['rating'] = result[3]  # rating
         business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
-        self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz.extend([business])
         self.retrieved_biz_type.extend(['food_cuisine'])
 
         return business
@@ -155,6 +161,7 @@ class Retriever:
             'biz_id': '',
             'biz_name': '',
             'category': '',
+            'cuisine': '',
             'statement': '',
             'rating': ''
         }
@@ -182,7 +189,7 @@ class Retriever:
         business['rating'] = result[3]  # rating
         business['statement'] = self.get_random_similar_stmt(parsed_dict,biz_id)
 
-        self.retrieved_biz_id.extend([biz_id])
+        self.retrieved_biz.extend([business])
         self.retrieved_biz_type.extend(['random'])
 
         return business
@@ -266,8 +273,9 @@ class Retriever:
     def _get_biz_id_exclude_str(self):
         str = ''
 
-        if len(self.retrieved_biz_id) > 0:
-            biz_ids_str = ",".join('"' + biz_id + '"' for biz_id in self.retrieved_biz_id)
+        if len(self.retrieved_biz) > 0:
+            biz_ids = [b['biz_id'] for b in self.retrieved_biz]
+            biz_ids_str = ",".join('"' + biz_id + '"' for biz_id in biz_ids)
             str = "AND b.biz_id NOT IN ("+ biz_ids_str + ")"
 
         return str

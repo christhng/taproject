@@ -172,12 +172,21 @@ class Responder:
                 response = self._get_similar_business(state, result)
                 state = self._reset_state(state)
                 retrieved = False
-            else:
+            elif result['biz_name'] and result['category']:
                 response = "You can try {0}, it is rated {3} on our database. " \
                            "They serve {1}. \n" \
                            "One of our reviewers commented: \"{2}\". \n" \
                            "Is this what you are looking for?".format(result['biz_name'],
                                                                       result['category'],
+                                                                      result['statement'],
+                                                                      result['rating'])
+                retrieved = True
+            elif result['biz_name'] and result['cuisine']:
+                response = "You can try {0}, it is rated {3} on our database. " \
+                           "Cuisine served '{1}'. \n" \
+                           "One of our reviewers commented: \"{2}\". \n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['cuisine'],
                                                                       result['statement'],
                                                                       result['rating'])
                 retrieved = True
@@ -210,19 +219,39 @@ class Responder:
         further_probe = self._check_post_feedback_intent(parsed_dict)
         if further_probe:
             if retriever.retrieved_biz_type[-1] == 'food':
-                result = retriever.get_business_by_food(parsed_dict,state)
+                temp_state = state
+                temp_state['foods'] = self._get_latest_query(retriever, 'category')
+                result = retriever.get_business_by_food(parsed_dict,temp_state)
             elif retriever.retrieved_biz_type[-1] == 'cuisine':
-                result = retriever.get_business_by_cuisine(parsed_dict,state)
+                temp_state = state
+                temp_state['cuisines'] = self._get_latest_query(retriever, 'cuisine')
+                result = retriever.get_business_by_cuisine(parsed_dict,temp_state)
             elif retriever.retrieved_biz_type[-1] == 'food_cuisine':
                 result = retriever.get_business_by_food_cuisine(parsed_dict, state)
-            if result['biz_name']:
+            else:
+                result = retriever.get_random_business(parsed_dict)
+                print(result)
+                response = "Sorry I can't find anything else liao! " \
+                           "Do you want to try {0} instead?".format(result['biz_name'])
+                return {'response': response, 'retrieved': retrieved}
+
+            if result['biz_name'] and result['category']:
                 response = "Ok, maybe you can try {0} instead! " \
                            "They serve {1}. \n" \
                            "Here's a statement someone made for {2}:\n{3} \n" \
-                           "Here's a full review, " \
-                           "if you bothered to read: \n{4}\n" \
+                           "Here's the rating for {0}: {4}\n" \
                            "Is this what you are looking for?".format(result['biz_name'],
                                                                       result['category'],
+                                                                      result['biz_name'],
+                                                                      result['statement'],
+                                                                      result['rating'])
+            elif result['biz_name'] and result['cuisine']:
+                response = "Ok, maybe you can try {0} instead! " \
+                           "Cuisine served: {1}. \n" \
+                           "Here's a statement someone made for {2}:\n{3} \n" \
+                           "Here's the rating for {0}: {4}\n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['cuisine'],
                                                                       result['biz_name'],
                                                                       result['statement'],
                                                                       result['rating'])
@@ -240,6 +269,12 @@ class Responder:
                     retrieved = False
         return {'response': response, 'retrieved': retrieved}
 
+
+    def _get_latest_query(self, retriever, attr):
+        for biz in list(reversed(retriever.retrieved_biz)):
+            if biz[attr]:
+                return [biz[attr]]
+        return None
 
     def _get_result_from_db(self, state, parsed_dict, retriever):
         query_type = self._get_db_query_type(state)

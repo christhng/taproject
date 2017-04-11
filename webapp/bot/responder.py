@@ -86,7 +86,7 @@ class Responder:
 
         Arguments:
             state (dict) - Dictionary passed from StateMachine object
-            parsed (dict) - Dictionary passed from Parser object
+            parsed_dict (dict) - Dictionary passed from Parser object
         """
 
         # retrieve the input type - question, rhetoric, statement
@@ -97,46 +97,57 @@ class Responder:
         # get topic from parsed_dict - greeting, bot, user
         # default response to be overriden
         topic = self._get_topic(parsed_dict)
-        response = AlternativeResponder(
-            parsed_topic=topic,
-            parsed_dict=parsed_dict,
-            input_type=input_type
-            ).construct()
+        default_response = AlternativeResponder(parsed_topic=topic,
+                                        parsed_dict=parsed_dict,
+                                        input_type=input_type).construct()
+
+        # is the user's input rhetorical?
+        response = self._construct_response_to_rhetoric() if input_type == 'rhetoric' else default_response
+
+        # if not let's continue checking other conditions for the most appropriate response
         retriever = Retriever()
 
-        # check for different conditions to override default response
-        if input_type == 'rhetoric':
-            response = self._construct_response_to_rhetoric(parsed_dict)
-        elif len(state['locations']) > 0 and len(state['foods']) == 0:
-            if state['locations'][0] not in valid_locations and state['locations'][0] in StateMachine().known_locations:
-                # if user mentions location that is not within the valid locations
-                response = "Sorry, sir - Jiakbot is not that well travelled."
-            elif state['locations'][0] in valid_locations and state['locations'][0] in StateMachine().known_locations:
-                # if user mentions a location that is valid
-                response_dict = self._construct_response_from_db(state, parsed_dict, retriever, random=True)
-                response = response_dict['response']
-                retrieved = response_dict['retrieved']
-                state['retrieved'] = retrieved
-        elif state['retrievable']:
-        # if retrievable go retrieve the biz name, location and 1 line of review
-            response_dict = self._construct_response_from_db(state, parsed_dict, retriever)
-            response = response_dict['response']
-            retrieved = response_dict['retrieved']
-            state['retrieved'] = retrieved
-        # detect if previous statement was a recommendation
-        elif state['retrieved']:
-            # if bot is asking for a feedback
-            # pass input_type to constructor
-            r = self._construct_response_to_feedback(parsed_dict, input_type, state, retriever)
-            response = r['response']
-            state['retrieved'] =  r['retrieved'] # reset retrieved status
+        # check if state only has location to conduct query, or if it has food/cuisine
+        if self._only_location(state):
+            response_dict = self._construct_response_from_db(state, parsed_dict, retriever, random=True)
+            response = "Sorry, sir - Jiakbot is not that well travelled." if state['locations'][0] not in valid_locations else response_dict['response']
+            state['retrieved'] = False if state['locations'][0] not in valid_locations else response_dict['retrieved']
+        elif self._food_and_or_cuisine(state):
+            response_dict = self._construct_response(input_type, state, parsed_dict, retriever)
+            response, state['retrieved'] = response_dict['response'], response_dict['retrieved']
 
+        # reset query terms if items have been retrieved
         if state['retrieved']:
-            state['cuisines'] = []
-            state['foods'] = []
-            state['locations'] = []
+            state = self._reset_state(state)
 
         return response
+
+    def _reset_state(self, state):
+        state['cuisines'] = []
+        state['foods'] = []
+        state['locations'] = []
+        return state
+
+    def _construct_response_to_rhetoric(self):
+        return random.choice(rhetoric_responses)
+
+    def _only_location(self, state):
+        if len(state['locations']) > 0 and len(state['foods']) == 0 and len(state['cuisines']) == 0:
+            return True
+        return False
+
+    def _food_and_or_cuisine(self, state):
+        if len(state['foods']) > 0 or len(state['cuisines']) > 0:
+            return True
+        elif state['retrieved']:
+            return True
+        return False
+
+    def _construct_response(self, input_type, state, parsed_dict, retriever):
+        response_dict = self._construct_response_from_db(state, parsed_dict, retriever) if state['retrievable'] else ''
+        if not response_dict:
+            response_dict = self._construct_response_to_feedback(parsed_dict, input_type, state, retriever) if state['retrieved'] else ''
+        return response_dict
 
 
     def _construct_response_from_db(self, state, parsed_dict, retriever, random=False):
@@ -156,12 +167,12 @@ class Responder:
         # check if any results are returned
         try:
             if not result['biz_name']:
-                response = 'Sorry, I wasn\'t able to find anything relevant! Try something else.'
-                state['cuisines'] = []
-                state['foods'] = []
-                state['locations'] = []
+                # get similar business
+                result = retriever.get_similar_business(state['foods'][0])
+                response = self._get_similar_business(state, result)
+                state = self._reset_state(state)
                 retrieved = False
-            else:
+            elif result['biz_name'] and result['category']:
                 response = "You can try {0}, it is rated {3} on our database. " \
                            "They serve {1}. \n" \
                            "One of our reviewers commented: \"{2}\". \n" \
@@ -170,14 +181,27 @@ class Responder:
                                                                       result['statement'],
                                                                       result['rating'])
                 retrieved = True
+            elif result['biz_name'] and result['cuisine']:
+                response = "You can try {0}, it is rated {3} on our database. " \
+                           "Cuisine served '{1}'. \n" \
+                           "One of our reviewers commented: \"{2}\". \n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['cuisine'],
+                                                                      result['statement'],
+                                                                      result['rating'])
+                retrieved = True
         except TypeError: # if result is empty
-            response = 'Sorry, I wasn\'t able to find {0} in our database, would you rather try something else?'.format(state['foods'][0])
-            state['cuisines'] = []
-            state['foods'] = []
-            state['locations'] = []
+            # get similar business
+            result = retriever.get_similar_business(state['foods'][0])
+            response = self._get_similar_business(state, result)
+            state = self._reset_state(state)
             retrieved = False
         # prepare response
         return {'response': response, 'retrieved': retrieved}
+
+    def _get_similar_business(self, state, result):
+        response = 'Sorry, I wasn\'t able to find anything relevant to {0}! Maybe you can consider one of the following options?\n{1}'.format(state['foods'][0], ', '.join(result))
+        return response
 
     def _construct_response_to_feedback(self, parsed_dict, input_type, state, retriever):
         """
@@ -192,22 +216,42 @@ class Responder:
         # default response
         response = "Wah I don't understand sia, can just let me know whether my recommendation useful or not?"
         # check for intent
-        intent = self._check_post_feedback_intent(parsed_dict)
-        if intent == 'further_probe':
+        further_probe = self._check_post_feedback_intent(parsed_dict)
+        if further_probe:
             if retriever.retrieved_biz_type[-1] == 'food':
-                result = retriever.get_business_by_food(parsed_dict,state)
+                temp_state = state
+                temp_state['foods'] = self._get_latest_query(retriever, 'category')
+                result = retriever.get_business_by_food(parsed_dict,temp_state)
             elif retriever.retrieved_biz_type[-1] == 'cuisine':
-                result = retriever.get_business_by_cuisine(parsed_dict,state)
-            # elif retriever.retrieved_biz_type[-1] == 'both':
-            #     result = retriever.get_business_by_both(parsed_dict, state)
-            if result['biz_name']:
+                temp_state = state
+                temp_state['cuisines'] = self._get_latest_query(retriever, 'cuisine')
+                result = retriever.get_business_by_cuisine(parsed_dict,temp_state)
+            elif retriever.retrieved_biz_type[-1] == 'food_cuisine':
+                result = retriever.get_business_by_food_cuisine(parsed_dict, state)
+            else:
+                result = retriever.get_random_business(parsed_dict)
+                print(result)
+                response = "Sorry I can't find anything else liao! " \
+                           "Do you want to try {0} instead?".format(result['biz_name'])
+                return {'response': response, 'retrieved': retrieved}
+
+            if result['biz_name'] and result['category']:
                 response = "Ok, maybe you can try {0} instead! " \
-                           "They serve {1}. " \
+                           "They serve {1}. \n" \
                            "Here's a statement someone made for {2}:\n{3} \n" \
-                           "Here's a full review, " \
-                           "if you bothered to read: \n{4}\n" \
+                           "Here's the rating for {0}: {4}\n" \
                            "Is this what you are looking for?".format(result['biz_name'],
                                                                       result['category'],
+                                                                      result['biz_name'],
+                                                                      result['statement'],
+                                                                      result['rating'])
+            elif result['biz_name'] and result['cuisine']:
+                response = "Ok, maybe you can try {0} instead! " \
+                           "Cuisine served: {1}. \n" \
+                           "Here's a statement someone made for {2}:\n{3} \n" \
+                           "Here's the rating for {0}: {4}\n" \
+                           "Is this what you are looking for?".format(result['biz_name'],
+                                                                      result['cuisine'],
                                                                       result['biz_name'],
                                                                       result['statement'],
                                                                       result['rating'])
@@ -226,6 +270,12 @@ class Responder:
         return {'response': response, 'retrieved': retrieved}
 
 
+    def _get_latest_query(self, retriever, attr):
+        for biz in list(reversed(retriever.retrieved_biz)):
+            if biz[attr]:
+                return [biz[attr]]
+        return None
+
     def _get_result_from_db(self, state, parsed_dict, retriever):
         query_type = self._get_db_query_type(state)
         if not query_type:
@@ -234,8 +284,8 @@ class Responder:
             result = retriever.get_business_by_food(parsed_dict, state)
         elif query_type == 'cuisines':
             result = retriever.get_business_by_cuisine(parsed_dict, state)
-        # elif query_type == 'both':
-        #     result = retriever.get_business_by_both(parsed_dict, state)
+        elif query_type == 'food_cuisine':
+            result = retriever.get_business_by_food_cuisine(parsed_dict, state)
         return result
 
     def _get_db_query_type(self, state):
@@ -244,15 +294,15 @@ class Responder:
         elif not len(state['foods']) > 0 and len(state['cuisines']) > 0:
             return 'cuisines'
         elif len(state['foods']) > 0 and len(state['cuisines']) > 0:
-            return 'both'
+            return 'food_cuisine'
         else:
             return None
 
     def _check_post_feedback_intent(self, parsed_dict):
         for w in parsed_dict['tokens']:
             if w in self.further_probe_words:
-                return 'further_probe'
-        return 'reset'
+                return True
+        return False
 
     def _get_topic(self, parsed_dict):
 
