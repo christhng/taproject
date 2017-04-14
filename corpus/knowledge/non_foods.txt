@@ -20,6 +20,7 @@ morning
 lunch
 afternoon
 evening
+eh
 night
 authentic
 organic
@@ -27,7 +28,11 @@ cheap
 near
 nearest
 time
+yoz
 lol
+yo
+dont
+alright
 holy shit
 shit
 holy
@@ -729,4 +734,9 @@ yourselves
 you've
 z
 zero
+yup
+ya
+yea
+yah
+yeah
 

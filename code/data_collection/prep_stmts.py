@@ -52,7 +52,7 @@ for result in results:
         #print(cleansed)
 
         # remove stopwords
-        cleansed = [w for w in cleansed if w not in stop_list]
+        # cleansed = [w for w in cleansed if w not in stop_list]
         #print(cleansed)
 
         # stem the statement
