@@ -48,7 +48,7 @@ class JiakBot:
 
         # print('-----  DEBUGGING  -----')
         # print('parsed_dict:', parsed_dict)
-        print('state:',sm.state)
+        # print('state:',sm.state)
         # print('context', sm.context)
         # print('----- ----- ----- -----')
 
