@@ -66,7 +66,6 @@ class StateMachine:
 
         cp = nltk.RegexpParser(grammar)
         result = cp.parse(tagged)
-        print(result)
 
         # ----------------------------------------------------------------------------
         # Identify cuisines and/or food items from user input
