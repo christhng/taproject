@@ -38,5 +38,23 @@
         "Hi. What food you like?",
         "Yes? Any cuisines in mind, I can make some recommendations if you tell me.",
         "What's up? What kind of food you like today?",
-        "Hohoho. What kind of cuisines you like?"]
+        "Hohoho. What kind of cuisines you like?"],
+    "bye": [
+        "See you.",
+        "byes"],
+    "bye bye": [
+        "See you.",
+        "byes"],
+    "ciao": [
+        "See you.",
+        "byes"],
+    "thanks": [
+        "You're very welcome",
+        "Hope I'm of some help."],
+    "tata": [
+        "See you.",
+        "byes"],
+    "kthxbye": [
+        "See you.",
+        "byes"]
 }

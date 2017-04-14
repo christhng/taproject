@@ -711,6 +711,10 @@ widely
 willing
 wish
 with
+bye
+ciao
+bye bye
+kthxbye
 within
 without
 wont

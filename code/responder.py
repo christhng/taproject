@@ -34,7 +34,16 @@ class Responder:
 
     # Parameters
     valid_locations = ['city hall', 'raffles place', 'bras basah', 'dhoby ghaut']
-    topics = ['bot', 'user', 'greetings', 'generic']
+
+    # read in cuisines
+    cuisine_file = open('../corpus/knowledge/cuisines.txt', 'r')
+    known_cuisines = [cuisine.lower() for cuisine in cuisine_file.read().splitlines()]
+    cuisine_file.close()
+
+    # read in food
+    food_file = open('../corpus/knowledge/foods.txt', 'r')
+    known_foods = [food.lower() for food in food_file.read().splitlines()]
+    food_file.close()
 
     state_after_response = State.understood_nothing
 

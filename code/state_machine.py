@@ -56,6 +56,7 @@ class StateMachine:
                 {<VB.*><JJ.*|IN>?<RB>?<NN.*>+}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
+                {<JJ>}
 
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
@@ -65,6 +66,7 @@ class StateMachine:
 
         cp = nltk.RegexpParser(grammar)
         result = cp.parse(tagged)
+        print(result)
 
         # ----------------------------------------------------------------------------
         # Identify cuisines and/or food items from user input
