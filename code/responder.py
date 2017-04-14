@@ -193,7 +193,7 @@ class Responder:
 
             # Based on the answer perform stuff
             if answered_yes:
-                response = response_yes_no['yes_after_result']
+                response = random.choice(response_yes_no['yes_after_result'])
                 self.state_after_response = State.understood_nothing
 
             if answered_no:
