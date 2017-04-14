@@ -87,6 +87,8 @@ class Responder:
 
                 else:
                     response = self.retriever.get_random_similar_stmt(parsed_dict['input_text'])
+                    if response == None:
+                        response = random.choice(response_general['generic'])
 
             # if user asks a question
             elif abt_question:
