@@ -195,8 +195,10 @@ class Responder:
             for word in parsed_dict['tokens']:
                 if word in input_yes_or_no['yes']:
                     answered_yes = True
+                    break
                 elif word in input_yes_or_no['no']:
                     answered_no = True
+                    break
                 else:
                     answered_something_else = True
 
