@@ -180,6 +180,7 @@ class Responder:
         # ---------------------------------------------------------
         elif state == State.provided_no_result:
             response = random.choice(response_general['unknown_food_cuisine'])
+            self.state_after_response = State.understood_nothing  # Update internal state
             return response
 
         # (STATE) PROVIDED INITIAL RESULT - GETTING FEEDBACK OR WIPE STATE
