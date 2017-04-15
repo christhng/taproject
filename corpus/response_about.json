@@ -7,9 +7,9 @@
         "Yes, I'm a bot - a ChatBot to be exact - but you can call me Jiakbot"
     ],
     "user": [
-        "That's nice to know",
-        "Tell me more",
-        "I know ...",
-        "The feeling is not mutual ... right ?"
+        "That's nice to know, what food would you like though?",
+        "Tell me more about food...",
+        "I know ... shall we talk about food?",
+        "The feeling is not mutual ... right? Lets talk about food instead..."
     ]
 }
