@@ -179,8 +179,29 @@ class Responder:
         # (STATE) PROVIDED NO RESULT - GETTING FEEDBACK OR WIPE STATE
         # ---------------------------------------------------------
         elif state == State.provided_no_result:
-            response = random.choice(response_general['unknown_food_cuisine'])
-            self.state_after_response = State.understood_nothing  # Update internal state
+
+            answered_yes = False
+            answered_no = False
+            answered_something_else = False
+
+            # Checks what the user answers
+            for word in parsed_dict['tokens']:
+                if word in input_yes_or_no['yes']:
+                    answered_yes = True
+                    break
+                elif word in input_yes_or_no['no']:
+                    answered_no = True
+                    break
+                else:
+                    answered_something_else = True
+
+            if answered_yes:
+                response = random.choice(response_general['request_food_cuisine'])
+                self.state_after_response = State.understood_nothing
+            else:
+                response = random.choice(response_general['unknown_food_cuisine'])
+                self.state_after_response = State.understood_nothing  # Update internal state
+
             return response
 
         # (STATE) PROVIDED INITIAL RESULT - GETTING FEEDBACK OR WIPE STATE

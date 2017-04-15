@@ -223,8 +223,11 @@ class Retriever:
         q_sorted_sims = sorted(enumerate(q_sims), key=lambda item: -item[1])
 
         # Step 3: Return most relevant statement back
-        most_similar_stmt_id = q_sorted_sims[0][0]
-        statement = results[most_similar_stmt_id][2]
+        if len(q_sorted_sims) != 0:
+            most_similar_stmt_id = q_sorted_sims[0][0]
+            statement = results[most_similar_stmt_id][2]
+        else:
+            return None
 
         return statement
 
@@ -266,8 +269,11 @@ class Retriever:
         q_sorted_sims = sorted(enumerate(q_sims), key=lambda item: -item[1])
 
         # Step 3: Return most relevant statement back only if it crosses the threshold
-        stmt_index = q_sorted_sims[0][0]
-        score = q_sorted_sims[0][1]
+        if len(q_sorted_sims) != 0:
+            stmt_index = q_sorted_sims[0][0]
+            score = q_sorted_sims[0][1]
+        else:
+            return None
 
         if score > 0.6:
             statement = results[stmt_index]
