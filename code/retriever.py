@@ -175,7 +175,6 @@ class Retriever:
         business['statement'] = self.get_random_similar_stmt_by_biz(parsed_dict,biz_id)
 
         self.retrieved_biz.extend([business])
-        self.retrieved_biz_type.extend(['random'])
 
         return business
 

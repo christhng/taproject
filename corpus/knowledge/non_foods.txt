@@ -21,6 +21,7 @@ lunch
 afternoon
 evening
 eh
+cb
 night
 authentic
 organic
