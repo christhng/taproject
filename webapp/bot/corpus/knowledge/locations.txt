@@ -2,8 +2,6 @@ Admiralty
 Admiralty
 Alexandra
 Aljunied
-Aljunied
-Ang Mo Kio
 Ang Mo Kio
 Ayer Rajah
 Balestier
@@ -21,7 +19,6 @@ Bedok Reservoir
 Bedok South
 Bencoolen
 Bencoolen
-Bendemeer
 Bendemeer
 Bidadari
 Bishan
@@ -144,6 +141,7 @@ Jalan Besar
 Joo Chiat
 Joo Koon
 Joo Koon
+Jurong
 Jurong East
 Jurong East
 Jurong East

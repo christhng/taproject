@@ -2,6 +2,20 @@ from jiakbot import JiakBot
 
 # test conversations
 # ---------------------------------------------
+# test sentences (use case 0)
+case0_sentences = [None] * 10
+case0_sentences[0] = "Why do you think i care?"  # bot: "Hello there. What would you like to eat today?"
+case0_sentences[1] = "i love you"  # bot: "Where are you?"
+case0_sentences[2] = "what is 10 x 10?"  # bot: "What would you like to have?"
+case0_sentences[3] = "you stupid ah"  # bot: There is a Ya Kun near Raffles Place...
+case0_sentences[4] = "no"  # bot: Great! (clear state and repeat cycle)
+case0_sentences[5] = "prata ?"  # bot: Great! (clear state and repeat cycle)
+case0_sentences[6] = "no"  # bot: Great! (clear state and repeat cycle)
+case0_sentences[7] = "why do you think I care"  # bot: Great! (clear state and repeat cycle)
+case0_sentences[8] = "yes"  # bot: Great! (clear state and repeat cycle)
+case0_sentences[9] = "no"  # bot: Great! (clear state and repeat cycle)
+
+
 # test sentences (use case 1)
 case1_sentences = [None] * 5
 case1_sentences[0] = "Hey"  # bot: "Hello there. What would you like to eat today?"
@@ -13,16 +27,18 @@ case1_sentences[3] = "I want to have burgers"  # bot: There is a Ya Kun near Raf
 case1_sentences[4] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 # test sentences (use case 2)
-case2_sentences = [None] * 6
-case2_sentences[0] = "Hey"  # bot: "Hello there. What would you like to eat today?"
+case2_sentences = [None] * 9
+case2_sentences[0] = "hello hey"  # bot: "Hello there. What would you like to eat today?"
 case2_sentences[1] = "I don't know"  # bot: "Where are you?"
-case2_sentences[2] = "Raffles Place"  # bot: "What would you like to have?"
-case2_sentences[3] = "Anything"  # bot: There's chicken rice and sandwiches nearby. What do you want?
+case2_sentences[2] = "I want to eat prata "  # bot: "What would you like to have?"
+case2_sentences[3] = "No"  # bot: There's chicken rice and sandwiches nearby. What do you want?
 case2_sentences[4] = "Chicken Rice"  # bot: There is a Tian Tian Chicken Rice near Raffles Place".
 # bot: Some people say "Best chicken rice in Singapore"
 # bot: Is that what you want?
-case2_sentences[5] = "Yes"  # bot: Great! (clear state and repeat cycle)
-
+case2_sentences[5] = "eh you stupid or what?"  # bot: Great! (clear state and repeat cycle)
+case2_sentences[6] = "what about duck?"  # bot: Great! (clear state and repeat cycle)
+case2_sentences[7] = "Nope"  # bot: Great! (clear state and repeat cycle)
+case2_sentences[8] = "Nope"  # bot: Great! (clear state and repeat cycle)
 
 # test sentences (use case 3)
 case3_sentences = [None] * 3
@@ -119,8 +135,8 @@ case12_sentences[3] = "Yes"  # bot: Great! (clear state and repeat cycle)
 
 # PARAMETERS:
 # ---------------------------------------------
-bot_mode = 'test' # live
-test_sentences = case12_sentences # case2_sentences
+bot_mode = 'live' # live
+test_sentences = case7_sentences # case2_sentences
 
 # jiakbot code
 # ---------------------------------------------
@@ -143,5 +159,6 @@ if bot_mode == 'live':
 
 elif bot_mode == 'test':
     for i in range(0, len(test_sentences)):
-        print('User:', test_sentences[i])
-        print('Jiakbot says:', jiakbot.respond(test_sentences[i]))
+
+        print('User    :', test_sentences[i])
+        print('Jiakbot :', jiakbot.respond(test_sentences[i]))

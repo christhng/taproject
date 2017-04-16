@@ -40,12 +40,19 @@ class JiakBot:
         # get the current state
         sm.update_state(parsed_dict)
 
-        print('----- ----- ----- -----')
-        print('parsed_dict:', parsed_dict)
-        print('state:',sm.state)
-        print('----- ----- ----- -----')
-
         # get the response
-        response = r.get_response(sm.state, parsed_dict)
+        response = r.get_response(parsed_dict, sm.state,sm.context,sm.history)
+
+        if sm.state != r.state_after_response:
+            sm.update_state_after_response(r.state_after_response)
+
+        # print('-----  DEBUGGING  -----')
+        # print('parsed_dict:', parsed_dict)
+        # print('state:',sm.state)
+        # print('context', sm.context)
+        # print('----- ----- ----- -----')
 
         return(response)
+
+    def reset(self):
+        self.state_machine = self.state_machine.reset()

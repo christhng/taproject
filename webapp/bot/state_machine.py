@@ -1,16 +1,26 @@
 import nltk, re
+from enum import Enum
+import copy
+
+class State(Enum):
+    understood_nothing = 1
+    understood_location = 2
+    understood_food_cuisine = 3
+    provided_initial_result = 4
+    provided_revised_result = 5
+    provided_no_result = 6
 
 class StateMachine:
 
-    state = {
-        'retrievable': False,  # indicates whether there is enough info to retrieve
+    state = State.understood_nothing
+
+    context = {
         'cuisines': [],
         'foods': [],
-        'locations': [],
-        'previous_state': [0, 0, 0],  # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-        'current_state': [0, 0, 0],  # cuisine,food,location - 0 indicates nothing, 1 indicates populated
-        'retrieved': False,
+        'locations': []
     }
+
+    history = []
 
     # read in locations
     location_file = open('../corpus/knowledge/locations.txt','r')
@@ -34,8 +44,9 @@ class StateMachine:
 
     def update_state(self, parsed_dict):
 
-        self.state['retrievable'] = False
-        updated = False
+        self.context['foods'] = []
+        self.context['cuisines'] = []
+        self.context['locations'] = []
 
         tagged = nltk.pos_tag(nltk.word_tokenize(parsed_dict['input_text']))
 
@@ -45,6 +56,7 @@ class StateMachine:
                 {<VB.*><JJ.*|IN>?<RB>?<NN.*>+}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
+                {<JJ>}
 
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}
@@ -139,189 +151,202 @@ class StateMachine:
         identified_cuisines = [phrase for phrase in identified_food_cuisines if phrase.lower() in self.known_cuisines]
         identified_locations = [phrase for phrase in identified_locations if phrase.lower() not in not_location]
 
-        # append to the state
-        self.state['foods'].extend(identified_foods)
-        self.state['cuisines'].extend(identified_cuisines)
-        self.state['locations'].extend(identified_locations)
 
         # ----------------------------------------------------------------------------
         # all the logic to update the states
         # ----------------------------------------------------------------------------
 
-        # Update state
-        self.state['previous_state'] = self.state['current_state']
+        state_before_update = self.state
 
-        if len(self.state['cuisines']) > 0:
-            self.state['current_state'][0] = 1
-            self.state['retrievable'] = True
+        # append to the state
+        self.context['foods'].extend(identified_foods)
+        self.context['cuisines'].extend(identified_cuisines)
+        self.context['locations'].extend(identified_locations)
 
-        if len(self.state['foods']) > 0:
-            self.state['current_state'][1] = 1
-            self.state['retrievable'] = True
+        # Update the state
+        if len(self.context['cuisines']) > 0 or len(self.context['foods']) > 0:
+            self.state = State.understood_food_cuisine
 
-        if len(self.state['locations']) > 0:
-            self.state['current_state'][2] = 1
-            self.state['retrievable'] = True
+        elif len(self.context['locations']) > 0:
+            self.state = State.understood_location
 
-        if self.state['previous_state'] == self.state['current_state']:
-            updated = False
-        else:
-            updated = True
 
-        return updated # returns True is updated
+        # Update history
+        curr_state = copy.deepcopy(self.state)
+        curr_context = copy.deepcopy(self.context)
+        self.history.append((curr_state, curr_context))
+
+        updated = False if self.state == state_before_update else True
+
+        return updated
+
+    def update_state_after_response(self,state):
+        self.state = state
+        curr_state = copy.deepcopy(self.state)
+        curr_context = copy.deepcopy(self.context)
+
+        self.history.append((curr_state, curr_context))
+
+        return None
+
+    def reset(self):
+        self.state = State.understood_nothing
+        self.history = []
+
 
 ########################################################
 # for testing purposes
 ########################################################
-
-sm = StateMachine()
-
+# sm = StateMachine()
+#
 # parsed_dict = {'input_text': 'I want to eat at Raffles Place'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-
-# parsed_dict = {'input_text': 'i want to have burgers or japanese food'}
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
+# print(sm.history)
+#
+# parsed_dict = {'input_text': 'i want to have burgers or japanese food at raffles place'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
-#
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
+# print(sm.history)
+
 # parsed_dict = {'input_text': 'where can i get katong laksa around here?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'any good tonkatsu or yakitori place nearby?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where is a good place for french food'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'got any places serving fish & chips in shenton way'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'what food is good and cheap near simei'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'get me some hot and spicy chicken wings'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'any place serving good porterhouse steaks in marina bay?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'recommend an Australian barbecue restaurant'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i get authentic seafood paella in city hall'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'any place serving blue mountain coffee?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'Recommend a spanish tapas place near bugis'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i find cheap szechuan food'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want to eat salad today'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want a different food place, please recommend?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'when is the best time to go for lunch in CBD?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want to eat bak kut teh'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'my boss bringing us out for chilli crab or black pepper crab, quick recommend a place'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want hawker stalls selling western food'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i find fish head curry in little india'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want to have japanese monster curry rice today'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'I am going to Jurong East. Recommend a place for chinese food'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i get the best roti plata in kovan'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'lazy to think what to eat today. recommend anything'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'i want to have beef horfun today'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i get penang char koay teow around dhoby ghaut'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'let us go for pipa duck today'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'my friend suggest to go for chicken rice. where is the nearest place?'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))
 #
 # parsed_dict = {'input_text': 'where can i get pork knuckles with beer the german way'}
 # sm.update_state(parsed_dict=parsed_dict)
 # print('original statement:', parsed_dict['input_text'])
-# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.state['foods'],sm.state['cuisines'],sm.state['locations'],'\n'))
+# print('foods:{0} | cuisines:{1} | locations:{2} {3}'.format(sm.context['foods'],sm.context['cuisines'],sm.context['locations'],'\n'))

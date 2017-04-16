@@ -20,6 +20,7 @@ morning
 lunch
 afternoon
 evening
+eh
 night
 authentic
 organic
@@ -27,7 +28,11 @@ cheap
 near
 nearest
 time
+yoz
 lol
+yo
+dont
+alright
 holy shit
 shit
 holy
@@ -706,6 +711,11 @@ widely
 willing
 wish
 with
+wrong
+bye
+ciao
+bye bye
+kthxbye
 within
 without
 wont
@@ -729,4 +739,9 @@ yourselves
 you've
 z
 zero
+yup
+ya
+yea
+yah
+yeah
 

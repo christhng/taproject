@@ -2,7 +2,7 @@ import configparser
 import json
 import random
 from .retriever import Retriever
-from .state_machine import StateMachine
+from .state_machine import StateMachine, State
 
 # Set up
 # ------------------------------------------------------------------------------
@@ -12,380 +12,272 @@ config_file_path = '../config_app/app_config.ini'
 config = configparser.ConfigParser()
 config.read(config_file_path)
 
-# read in vocabularies
-about_user_path = config['file_path']['about_user']
-about_bot_path = config['file_path']['about_bot']
-yes_or_no_path = config['file_path']['yes_or_no']
 
-# read in the corpus paths
-greeting_path = config['file_path']['greeting_corpus']
-about_bot_responses_path = config['file_path']['about_bot_responses']
-about_user_responses_path = config['file_path']['about_user_responses']
-generic_resp_path = config['file_path']['generic_response_corpus']
-yes_response_path = config['file_path']['yes_response_corpus']
-question_to_feedback_path = config['file_path']['question_to_feedback_corpus']
-response_to_rhetoric_path = config['file_path']['rhetoric_response_corpus']
-further_probe_path = config['file_path']['further_probe_corpus']
+# For Understanding User Inputs
+input_yes_or_no = json.load(open(config['file_path']['input_yes_or_no']))
+input_about = json.load(open(config['file_path']['input_about']))
 
-# load data
-greeting_data = json.load(open(greeting_path))
-bot_references_data = json.load(open(about_bot_path))
-about_bot_response_data = json.load(open(about_bot_responses_path))
-user_references_data = json.load(open(about_user_path))
-about_user_response_data = json.load(open(about_user_responses_path))
-generic_corpus_data = json.load(open(generic_resp_path))
-yes_or_no_data = json.load(open(yes_or_no_path))
-yes_response_data = json.load(open(yes_response_path))
-question_to_feedback_data = json.load(open(question_to_feedback_path))
-response_to_rhetoric_data = json.load(open(response_to_rhetoric_path))
-further_probe_data = json.load(open(further_probe_path))
+# For Generating Responses
+response_greetings = json.load(open(config['file_path']['response_greetings']))
+response_yes_no = json.load(open(config['file_path']['response_yes_no']))
+response_about = json.load(open(config['file_path']['response_about']))
+response_general = json.load(open(config['file_path']['response_general']))
+response_for_business = json.load(open(config['file_path']['response_for_business']))
 
-# convert greeting data to dict
-greetings = {
-    "greetings": {}
-}
-
-for g in greeting_data['greetings']:
-    greetings["greetings"][g[0].lower()] = g[1]
 
 # Responder
 # ------------------------------------------------------------------------------
 class Responder:
-    """
-    Reponse constructor class
 
-    Steps taken to create a response:
-        1) Check if results are retrievable
-        2a) If retrievable, Retrieve results from Retriever object
-            2a-1) Check that there is content retrieved in results dictionary
-            2a-2) Return response accordingly
-                2a-2-a) If something is found - seek response (Was this useful?)
-                    - Yes/No: reset state machine with proper response
-                    - Anything else: AlternativeResponder
-                2a-2-b) If nothing is found - reset state machine
-        2b) If not retrievable, use AlternativeResponder object to generate
-        response based on topic
-    """
+    # Helpers
+    retriever = Retriever()
 
-    greeting_corpus = greetings['greetings']
-    bot_references = bot_references_data['about_bot']
-    user_references = user_references_data['about_user']
-    # sort yes_or_no_data into respective dicts
-    yes_words = yes_or_no_data['yes']
-    yes_response = yes_response_data['yes_response']
-    # responses to questions user asks when bot asks for feedback
-    question_to_feedback = question_to_feedback_data['question']
-    # rhetoric responses
-    rhetoric_responses = response_to_rhetoric_data['rhetoric_response']
-    # words that encourage further probing
-    further_probe_words = further_probe_data['probe_words']
+    # Parameters
+    valid_locations = ['city hall', 'raffles place', 'bras basah', 'dhoby ghaut']
 
-    def get_response(self, state, parsed_dict):
-        """
-        Response controller
+    # read in cuisines
+    cuisine_file = open('../corpus/knowledge/cuisines.txt', 'r')
+    known_cuisines = [cuisine.lower() for cuisine in cuisine_file.read().splitlines()]
+    cuisine_file.close()
 
-        Arguments:
-            state (dict) - Dictionary passed from StateMachine object
-            parsed_dict (dict) - Dictionary passed from Parser object
-        """
+    # read in food
+    food_file = open('../corpus/knowledge/foods.txt', 'r')
+    known_foods = [food.lower() for food in food_file.read().splitlines()]
+    food_file.close()
 
-        # retrieve the input type - question, rhetoric, statement
-        input_type = parsed_dict['input_type']
-        valid_locations = ['city hall', 'raffles place', 'bras basah', 'dhoby ghaut']
+    state_after_response = State.understood_nothing
 
-        # logic to construct a sensible response
-        # get topic from parsed_dict - greeting, bot, user
-        # default response to be overriden
-        topic = self._get_topic(parsed_dict)
-        default_response = AlternativeResponder(parsed_topic=topic,
-                                        parsed_dict=parsed_dict,
-                                        input_type=input_type).construct()
+    def get_response(self, parsed_dict, state, context, history):
 
-        # is the user's input rhetorical?
-        response = self._construct_response_to_rhetoric() if input_type == 'rhetoric' else default_response
+        # Initialization
+        self.state_after_response = state
 
-        # if not let's continue checking other conditions for the most appropriate response
-        retriever = Retriever()
+        # Understanding using input
+        abt_question = True if parsed_dict['input_type'] == 'question' else False
+        abt_intent = True if set(parsed_dict['tokens']) & set(input_about['intent']) else False
+        abt_statement = True if parsed_dict['input_type'] == 'statement' else False
+        abt_rhetoric = True if parsed_dict['input_type'] == 'rhetoric' else False
+        abt_greeting = True if set(parsed_dict['tokens']) & set(response_greetings.keys()) else False
+        abt_bot = True if set(parsed_dict['pronouns']) & set(input_about['bot']) or \
+                          set(parsed_dict['nouns']) & set(input_about['bot']) else False
+        abt_user = True if set(parsed_dict['pronouns']) & set(input_about['user']) or \
+                           set(parsed_dict['nouns']) & set(input_about['user']) else False
+        abt_yes = True if set(parsed_dict['tokens']) & set(input_yes_or_no['yes']) else False
+        abt_no = True if set(parsed_dict['tokens']) & set(input_yes_or_no['no']) else False
+        # ---------------------------------------------------------
+        # Begin construction of response
+        # ---------------------------------------------------------
 
-        # check if state only has location to conduct query, or if it has food/cuisine
-        if self._only_location(state):
-            response_dict = self._construct_response_from_db(state, parsed_dict, retriever, random=True)
-            response = "Sorry, sir - Jiakbot is not that well travelled." if state['locations'][0] not in valid_locations else response_dict['response']
-            state['retrieved'] = False if state['locations'][0] not in valid_locations else response_dict['retrieved']
-        elif self._food_and_or_cuisine(state):
-            response_dict = self._construct_response(input_type, state, parsed_dict, retriever)
-            response, state['retrieved'] = response_dict['response'], response_dict['retrieved']
+        response = ''
 
-        # reset query terms if items have been retrieved
-        if state['retrieved']:
-            state = self._reset_state(state)
+        # (STATE) UNDERSTOOD NOTHING - MAY BE GREETING, ABOUT BOT, OR SOMETHING RANDOM
+        # ---------------------------------------------------------
+        if state == State.understood_nothing:
+
+            # use classifier to determine the type of input
+            # ---------------------------------------------------
+            if abt_statement:
+
+                if abt_greeting: # Greet if greeting
+                    greeting = set(parsed_dict['tokens']) & set(response_greetings.keys())
+                    response = random.choice(response_greetings[greeting.pop()])
+
+                elif abt_user:  # Talk about user
+                    response = random.choice(response_about['user'])
+
+                elif abt_bot: # Talk about jiakbot
+                    response = random.choice(response_about['bot'])
+
+                elif abt_yes: # yes to anything
+                    response = random.choice(response_yes_no['yes_generic'])
+
+                elif abt_no:  # no to anything
+                    response = random.choice(response_yes_no['no_generic'])
+
+                else:
+                    response = self.retriever.get_random_similar_stmt(parsed_dict['input_text'])
+                    if response == None:
+                        response = random.choice(response_general['generic'])
+
+            # if user asks a question
+            elif abt_question:
+                response = random.choice(response_general['question'])
+
+            # some random rhetoric question
+            elif abt_rhetoric:
+                response = random.choice(response_general['rhetoric'])
+
+            # if user asks to recommend override everything else
+            # -----------------
+            if abt_intent:
+                response = random.choice(response_general['recommend'])
+
+
+            return response
+
+        # (STATE) UNDERSTOOD LOCATION - LOCATION MAY OR MAY NOT BE CORRECT
+        # ---------------------------------------------------------
+        elif state == State.understood_location:
+
+            # Check if location is known and valid
+            if context['locations'][0] not in self.valid_locations:
+                response = random.choice(response_general['unknown_location'])
+            else:
+                result = self.retriever.get_random_business(parsed_dict)
+                response = self._format_response_with_biz(result)
+
+                # Update internal state
+                self.state_after_response = State.provided_initial_result
+
+            return response
+
+        # (STATE) UNDERSTOOD FOOD CUISINE - RETRIEVE SOMETHING FROM DB
+        # ---------------------------------------------------------
+        elif state == State.understood_food_cuisine:
+
+            guessed = False
+
+            requested_food = context['foods'][0] if len(context['foods']) > 0 else None
+            requested_cuisine = context['cuisines'][0] if len(context['cuisines']) > 0 else None
+
+            # Attempt to get food / cuisine based what user wants
+            if requested_food and not requested_cuisine:
+                result = self.retriever.get_business_by_food(parsed_dict,requested_food)
+            elif requested_cuisine and not requested_food:
+                result = self.retriever.get_business_by_food(parsed_dict,requested_cuisine)
+            elif requested_food and requested_cuisine:
+                result = self.retriever.get_business_by_food_cuisine(parsed_dict,requested_food, requested_cuisine)
+
+            # If no result attempt to get similar stuff based on biz name
+            if not result:
+                requested = requested_food if requested_food else requested_cuisine
+                result = self.retriever.get_similar_business_by_name(parsed_dict,requested)
+
+            # Lastly attempt to get similar stuff based on review text
+            if not result:
+                requested = requested_food if requested_food else requested_cuisine
+                result = self.retriever.get_similar_business_by_review(parsed_dict,requested)
+                guessed = True
+
+            # Construct the response for guessed response
+            if result and guessed:
+                response = self._format_response_with_guessed_biz(result, requested)
+                self.state_after_response = State.provided_initial_result  # Update internal state
+
+            # Construct the response for non-guessed response
+            elif result:
+                response = self._format_response_with_biz(result)
+                self.state_after_response = State.provided_initial_result  # Update internal state
+
+            # Construct the response for no result
+            else:
+                response = random.choice(response_general['no_result'])
+                self.state_after_response = State.provided_no_result  # Update internal state
+
+            return response
+
+        # (STATE) PROVIDED NO RESULT - GETTING FEEDBACK OR WIPE STATE
+        # ---------------------------------------------------------
+        elif state == State.provided_no_result:
+
+            answered_yes = False
+            answered_no = False
+            answered_something_else = False
+
+            # Checks what the user answers
+            for word in parsed_dict['tokens']:
+                if word in input_yes_or_no['yes']:
+                    answered_yes = True
+                    break
+                elif word in input_yes_or_no['no']:
+                    answered_no = True
+                    break
+                else:
+                    answered_something_else = True
+
+            if answered_yes:
+                response = random.choice(response_general['request_food_cuisine'])
+                self.state_after_response = State.understood_nothing
+            else:
+                response = random.choice(response_general['unknown_food_cuisine'])
+                self.state_after_response = State.understood_nothing  # Update internal state
+
+            return response
+
+        # (STATE) PROVIDED INITIAL RESULT - GETTING FEEDBACK OR WIPE STATE
+        # ---------------------------------------------------------
+        elif state == State.provided_initial_result:
+
+            response = None
+            answered_yes = False
+            answered_no = False
+            answered_something_else = False
+
+            # Checks what the user answers
+            for word in parsed_dict['tokens']:
+                if word in input_yes_or_no['yes']:
+                    answered_yes = True
+                    break
+                elif word in input_yes_or_no['no']:
+                    answered_no = True
+                    break
+                else:
+                    answered_something_else = True
+
+            # Based on the answer perform stuff
+            if answered_yes:
+                response = random.choice(response_yes_no['yes_after_result'])
+                self.state_after_response = State.understood_nothing
+
+            if answered_no:
+                history_food_cuisine = []
+
+                for state,context in history:
+                    if state == State.provided_initial_result:
+                        history_food_cuisine.append(context['foods'][0]) if len(context['foods']) > 0 else None
+                        history_food_cuisine.append(context['cuisines'][0]) if len(context['cuisines']) > 0 else None
+
+                for fc in history_food_cuisine:
+                    result = self.retriever.get_similar_business_by_review(parsed_dict, fc)
+
+                    if result is not None:
+                        response = self._format_response_with_guessed_biz(result, fc)
+                        self.state_after_response = State.provided_revised_result
+                        break
+
+                    else:
+                        response = random.choice(response_general['no_result'])
+                        self.state_after_response = State.provided_revised_result
+
+            if answered_something_else:
+                response = random.choice(response_general['request_yes_no'])
+
+            return response
+
+        # (STATE) PROVIDED REVISED RESULT - IF DON'T LIKE WIPE STATE
+        # ---------------------------------------------------------
+        elif state == State.provided_revised_result:
+
+            # Checks if the user says yes
+            for word in parsed_dict['tokens']:
+                give_up = False if word in input_yes_or_no['yes'] else True
+
+            response = random.choice(response_yes_no['repeated_no_response']) if give_up else random.choice(response_yes_no['yes_after_result'])
+            self.state_after_response = State.understood_nothing
 
         return response
 
-    def _reset_state(self, state):
-        state['cuisines'] = []
-        state['foods'] = []
-        state['locations'] = []
-        return state
+    def _format_response_with_biz(self,business):
 
-    def _construct_response_to_rhetoric(self):
-        return random.choice(rhetoric_responses)
-
-    def _only_location(self, state):
-        if len(state['locations']) > 0 and len(state['foods']) == 0 and len(state['cuisines']) == 0:
-            return True
-        return False
-
-    def _food_and_or_cuisine(self, state):
-        if len(state['foods']) > 0 or len(state['cuisines']) > 0:
-            return True
-        elif state['retrieved']:
-            return True
-        return False
-
-    def _construct_response(self, input_type, state, parsed_dict, retriever):
-        response_dict = self._construct_response_from_db(state, parsed_dict, retriever) if state['retrievable'] else ''
-        if not response_dict:
-            response_dict = self._construct_response_to_feedback(parsed_dict, input_type, state, retriever) if state['retrieved'] else ''
-        return response_dict
-
-
-    def _construct_response_from_db(self, state, parsed_dict, retriever, random=False):
-        """
-        Response generated from a result that was successfully
-        retrieved using Retriever
-
-        Arguments:
-            state (dict) - Dictionary passed from StateMachine object
-            parsed_dict (dict) - Dictionary passed from Parser object
-        """
-
-        result = retriever.get_random_business(parsed_dict)
-        if not random:
-            result = self._get_result_from_db(state, parsed_dict, retriever)
-
-        # check if any results are returned
-        try:
-            if not result['biz_name']:
-                # get similar business
-                result = retriever.get_similar_business(state['foods'][0])
-                response = self._get_similar_business(state, result)
-                state = self._reset_state(state)
-                retrieved = False
-            elif result['biz_name'] and result['category']:
-                response = "You can try {0}, it is rated {3} on our database. " \
-                           "They serve {1}. \n" \
-                           "One of our reviewers commented: \"{2}\". \n" \
-                           "Is this what you are looking for?".format(result['biz_name'],
-                                                                      result['category'],
-                                                                      result['statement'],
-                                                                      result['rating'])
-                retrieved = True
-            elif result['biz_name'] and result['cuisine']:
-                response = "You can try {0}, it is rated {3} on our database. " \
-                           "Cuisine served '{1}'. \n" \
-                           "One of our reviewers commented: \"{2}\". \n" \
-                           "Is this what you are looking for?".format(result['biz_name'],
-                                                                      result['cuisine'],
-                                                                      result['statement'],
-                                                                      result['rating'])
-                retrieved = True
-        except TypeError: # if result is empty
-            # get similar business
-            result = retriever.get_similar_business(state['foods'][0])
-            response = self._get_similar_business(state, result)
-            state = self._reset_state(state)
-            retrieved = False
-        # prepare response
-        return {'response': response, 'retrieved': retrieved}
-
-    def _get_similar_business(self, state, result):
-        response = 'Sorry, I wasn\'t able to find anything relevant to {0}! Maybe you can consider one of the following options?\n{1}'.format(state['foods'][0], ', '.join(result))
+        response = random.choice(response_for_business['with_biz']).format(biz_name=business['biz_name'],
+                                                                           category=business['category'].lower(),
+                                                                           statement=business['statement'],
+                                                                           rating=business['rating'])
         return response
 
-    def _construct_response_to_feedback(self, parsed_dict, input_type, state, retriever):
-        """
-        Response generated in response to feedback given to a
-        prior recommendation.
+    def _format_response_with_guessed_biz(self,business, kw):
+        response = random.choice(response_for_business['with_guessed_biz']).format(biz_name=business['biz_name'],
+                                                                                   category=business['category'].lower(),
+                                                                                   kw=kw)
 
-        Arguments:
-            parsed_dict (dict) - Dictionary passed from Parser object
-        """
-        # If bot asked for feedback and user, in turn, asked a question back
-        retrieved = True
-        # default response
-        response = "Wah I don't understand sia, can just let me know whether my recommendation useful or not?"
-        # check for intent
-        further_probe = self._check_post_feedback_intent(parsed_dict)
-        if further_probe:
-            if retriever.retrieved_biz_type[-1] == 'food':
-                temp_state = state
-                temp_state['foods'] = self._get_latest_query(retriever, 'category')
-                result = retriever.get_business_by_food(parsed_dict,temp_state)
-            elif retriever.retrieved_biz_type[-1] == 'cuisine':
-                temp_state = state
-                temp_state['cuisines'] = self._get_latest_query(retriever, 'cuisine')
-                result = retriever.get_business_by_cuisine(parsed_dict,temp_state)
-            elif retriever.retrieved_biz_type[-1] == 'food_cuisine':
-                result = retriever.get_business_by_food_cuisine(parsed_dict, state)
-            else:
-                result = retriever.get_random_business(parsed_dict)
-                print(result)
-                response = "Sorry I can't find anything else liao! " \
-                           "Do you want to try {0} instead?".format(result['biz_name'])
-                return {'response': response, 'retrieved': retrieved}
-
-            if result['biz_name'] and result['category']:
-                response = "Ok, maybe you can try {0} instead! " \
-                           "They serve {1}. \n" \
-                           "Here's a statement someone made for {2}:\n{3} \n" \
-                           "Here's the rating for {0}: {4}\n" \
-                           "Is this what you are looking for?".format(result['biz_name'],
-                                                                      result['category'],
-                                                                      result['biz_name'],
-                                                                      result['statement'],
-                                                                      result['rating'])
-            elif result['biz_name'] and result['cuisine']:
-                response = "Ok, maybe you can try {0} instead! " \
-                           "Cuisine served: {1}. \n" \
-                           "Here's a statement someone made for {2}:\n{3} \n" \
-                           "Here's the rating for {0}: {4}\n" \
-                           "Is this what you are looking for?".format(result['biz_name'],
-                                                                      result['cuisine'],
-                                                                      result['biz_name'],
-                                                                      result['statement'],
-                                                                      result['rating'])
-            else:
-                # no other suggestions
-                response = "Sorry I can't find anything else liao!"
-                retrieved = False
-        elif input_type == 'question':
-            response = random.choice(self.question_to_feedback)
-        # If user gave a response that could be understood as 'yes' or 'no'
-        else:
-            for w in parsed_dict['tokens']:
-                if w in self.yes_words:
-                    response = random.choice(self.yes_response)
-                    retrieved = False
-        return {'response': response, 'retrieved': retrieved}
-
-
-    def _get_latest_query(self, retriever, attr):
-        for biz in list(reversed(retriever.retrieved_biz)):
-            if biz[attr]:
-                return [biz[attr]]
-        return None
-
-    def _get_result_from_db(self, state, parsed_dict, retriever):
-        query_type = self._get_db_query_type(state)
-        if not query_type:
-            result = retriever.get_random_business(parsed_dict)
-        elif query_type == 'foods':
-            result = retriever.get_business_by_food(parsed_dict, state)
-        elif query_type == 'cuisines':
-            result = retriever.get_business_by_cuisine(parsed_dict, state)
-        elif query_type == 'food_cuisine':
-            result = retriever.get_business_by_food_cuisine(parsed_dict, state)
-        return result
-
-    def _get_db_query_type(self, state):
-        if len(state['foods']) > 0 and not len(state['cuisines']) > 0:
-            return 'foods'
-        elif not len(state['foods']) > 0 and len(state['cuisines']) > 0:
-            return 'cuisines'
-        elif len(state['foods']) > 0 and len(state['cuisines']) > 0:
-            return 'food_cuisine'
-        else:
-            return None
-
-    def _check_post_feedback_intent(self, parsed_dict):
-        for w in parsed_dict['tokens']:
-            if w in self.further_probe_words:
-                return True
-        return False
-
-    def _get_topic(self, parsed_dict):
-
-        """
-        Retrieve topic in order of importance.
-        Order of importance:
-            1) greeting
-            2) bot reference
-            3) user reference
-        """
-
-        for key in self.greeting_corpus.keys():
-            if key in parsed_dict['tokens']:
-                return 'greetings'
-
-        for bot_ref in self.bot_references:
-            if (bot_ref in parsed_dict['pronouns'] or bot_ref in parsed_dict['nouns']):
-                return 'bot'
-
-        for user_ref in self.user_references:
-            if user_ref in parsed_dict['pronouns']:
-                return 'user'
-
-        return 'generic'
-
-class AlternativeResponder:
-    """
-    Alternative response class
-
-    Attributes:
-        parsed_topic - A string representing the alternative topic of interest
-        based on the parsed sentence
-        topics - List of available topics
-    """
-    topics = ['bot', 'user', 'greetings', 'generic']
-    responses = {
-        **greetings, **about_bot_response_data,
-        **about_user_response_data, **generic_corpus_data
-    }
-
-    def __init__(self, parsed_dict, parsed_topic, input_type):
-        """
-        Return AlternativeResponder object which will respond to
-        a particular topic
-
-        Available topics:
-            bot - about the bot itself
-            user - about the user
-            greeting - general greetings
-            vague - don't understand
-        """
-
-        self.parsed_dict = parsed_dict
-        self.parsed_topic = parsed_topic
-        self.input_type = input_type
-
-    def _check_topic(self):
-        """
-        Checks if parsed_topic argument is in list of available topics
-        """
-
-        if self.parsed_topic in self.topics:
-            return True
-        return False
-
-    def construct(self):
-        """
-        Constructs alternative response
-
-        Arguments:
-            parsed_topic (string) - string which represents a topic that the
-            bot can comprehend
-        """
-
-        if self._check_topic():
-            if self.parsed_topic == 'greetings':
-                greetings = self.responses['greetings']
-                for key in greetings.keys():
-                    if key in self.parsed_dict['tokens']:
-                        response = random.choice(greetings[key])
-
-            else:
-                response = random.choice(self.responses[self.parsed_topic])
-        else:
-            response = "Pardon?"
         return response

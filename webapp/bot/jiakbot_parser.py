@@ -1,3 +1,4 @@
+import os
 from nltk.tokenize import word_tokenize
 from nltk import pos_tag
 from nltk.corpus import stopwords
@@ -8,7 +9,8 @@ import numpy as np
 
 class JiakBotParser:
 
-    question_clf = joblib.load('bot/jiak_models/question_model.pkl')
+    _model_path = os.path.join(os.path.dirname(__file__), 'jiak_models/question_model.pkl')
+    question_clf = joblib.load(_model_path)
 
     def parse_input(self, user_input):
         parsed_dict = {'tokens': word_tokenize(user_input.lower()),

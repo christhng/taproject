@@ -15,14 +15,18 @@ class JiakBotView(View):
 	"""
 	template_name = 'jiakbot/index.html'
 	conversation = dict()
+	jiakbot = JiakBot()
 
 	def get(self, request, *args, **kwargs):
 		"""
 		Initializes JiakBot interface
 		"""
+		if self.jiakbot:
+			self.jiakbot = JiakBot().reset()
 		self.conversation = dict()
 		clear = request.GET.get('clear', None)
 		if clear:
+			self.jiakbot = self.jiakbot.reset()
 			self.conversation = dict()
 		context = {'conversation': self.conversation}
 		return render(request, self.template_name, context)
