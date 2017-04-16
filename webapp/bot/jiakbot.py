@@ -46,11 +46,11 @@ class JiakBot:
         if sm.state != r.state_after_response:
             sm.update_state_after_response(r.state_after_response)
 
-        # print('-----  DEBUGGING  -----')
-        # print('parsed_dict:', parsed_dict)
-        # print('state:',sm.state)
-        # print('context', sm.context)
-        # print('----- ----- ----- -----')
+        print('-----  DETAILS  -----')
+        print('parsed_dict:', parsed_dict)
+        print('state:',sm.state)
+        print('context', sm.context)
+        print('----- ----- ----- -----')
 
         return(response)
 

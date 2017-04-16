@@ -212,6 +212,7 @@ don't
 down
 downwards
 due
+dumb
 during
 e
 each
@@ -577,6 +578,7 @@ specifying
 still
 stop
 strongly
+stupid
 sub
 substantially
 successfully
@@ -766,4 +768,3 @@ ya
 yea
 yah
 yeah
-

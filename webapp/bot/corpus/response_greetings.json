@@ -1,9 +1,20 @@
 {
+
     "wassup": [
         "Hi. What food you like?",
         "Yes? Any cuisines in mind, I can make some recommendations if you tell me.",
         "What's up? What kind of food you like today?",
         "Hohoho. What kind of cuisines you like?"],
+    "morning": [
+        "Morning. What food you like?",
+        "Morning. Any cuisines in mind, I can make some recommendations if you tell me.",
+        "Morning. What's up? What kind of food you like today?",
+        "Morning. What kind of cuisines you like?"],
+    "afternoon": [
+        "Afternoon. What food you like?",
+        "Afternoon. Any cuisines in mind, I can make some recommendations if you tell me.",
+        "Afternoon. What's up? What kind of food you like today?",
+        "Afternoon. What kind of cuisines you like?"],
     "yoz": [
         "Hi. What food you like?",
         "Yes? Any cuisines in mind, I can make some recommendations if you tell me.",

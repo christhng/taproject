@@ -56,7 +56,6 @@ class StateMachine:
                 {<VB.*><JJ.*|IN>?<RB>?<NN.*>+}
                 {<DT><JJ.*>?<NN.*>+}
                 {<CC><JJ.*>?<NN.*>+}
-                {<JJ>}
 
             LP:
                 {<IN|TO><NN.*>+<VB.*|RB>?}

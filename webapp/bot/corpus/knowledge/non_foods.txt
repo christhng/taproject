@@ -1,3 +1,19 @@
+ya
+that
+thats
+good
+good,
+shall
+try
+that
+, shall
+paiseh
+expensive
+satisfied
+hungry
+super
+deal
+wah
 food
 hey
 hi
@@ -11,6 +27,11 @@ best
 cuisine
 restaurant
 restaurants
+great
+la
+la...
+kidding la..
+kidding
 stall
 stalls
 place
@@ -21,6 +42,7 @@ lunch
 afternoon
 evening
 eh
+cb
 night
 authentic
 organic
@@ -190,6 +212,7 @@ don't
 down
 downwards
 due
+dumb
 during
 e
 each
@@ -555,6 +578,7 @@ specifying
 still
 stop
 strongly
+stupid
 sub
 substantially
 successfully
@@ -744,4 +768,3 @@ ya
 yea
 yah
 yeah
-

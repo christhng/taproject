@@ -36,5 +36,10 @@
         "Give me some foods or cuisines you like",
         "What food you like to have today?",
         "Tell me some cuisines you like."
+  ],
+  "request_food_cuisine":[
+        "Give me some other foods or cuisines you like",
+        "What other food you like to have today?",
+        "Tell me some other cuisines you like."
   ]
 }
