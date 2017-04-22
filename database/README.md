@@ -1,8 +1,10 @@
 # Data Description
 
+The data is for demonstration purposes only.
+
 ## Main Tables
 
-Jiakbot main tables. Contain businesses, their categories and reviews and most importantly the statement and response pairs. 
+Jiakbot main tables. Contain businesses, their categories and reviews and most importantly the statement and response pairs.
 
 * **businesses**
     * biz_id - TEXT
@@ -26,13 +28,14 @@ Jiakbot main tables. Contain businesses, their categories and reviews and most i
     * published - TEXT
     * rating - NUMERIC
     * desc - TEXT
- 
+
 ## Staging Tables
- 
-* Tables prefixed with stg_ . 
-* These tables essentially have the same structure as the main tables but used for data processing purposes. 
+
+* Tables prefixed with stg_ .
+* These tables essentially have the same structure as the main tables but used for data processing purposes.
 * The data extracted from APIs and web scraping are stored here.
 * Tables with only staging are ...
+
 * **stg_categories** - Holds the normalized categories of businesses
     * biz_id - TEXT
     * biz_category - TEXT
