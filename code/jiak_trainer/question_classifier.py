@@ -46,6 +46,7 @@ features = where_features + who_features + \
 file_path = 'code/jiak_trainer/question_corpus.txt'
 
 corpus = pd.read_table('question_corpus.txt', sep='\t',header = 0)
+#corpus = pd.read_table(file_path, sep='\t',header = 0)
 matrix = corpus.as_matrix()
 
 # create empty data set
@@ -54,11 +55,12 @@ data = []
 # get the corpus vectors
 for row in matrix:
     vector = vectorize(row,features)
+    vector.append(row[0])
     data.append(vector)
 
 df = pd.DataFrame(data)
 
-df.rename(columns={len(df.columns)-1:'label'}, inplace=True)
+df.rename(columns={len(df.columns)-2:'label'}, inplace=True)
 
 strat_split = StratifiedShuffleSplit(n_splits=1, train_size=0.75, test_size=0.25, random_state=2016)
 
@@ -70,11 +72,11 @@ for train_index, test_index in strat_split.split(df,df.loc[:,'label']):
 print('Verifying distribution ...')
 train_table = df_train.rename(index=str, columns={'label':'training_count'})
 test_table = df_test.rename(index=str, columns={'label':'test_count'})
-verify = pd.concat([train_table.ix[:,len(df.columns)-1:].groupby('training_count').count(),
-                    test_table.ix[:, len(df.columns)-1:].groupby('test_count').count()],axis = 1)
+verify = pd.concat([train_table.ix[:,len(df.columns)-2:].groupby('training_count').count(),
+                    test_table.ix[:, len(df.columns)-2:].groupby('test_count').count()],axis = 1)
 
-features_train = df_train.ix[:,:-1]
-label_train = df_train.ix[:,-1]
+features_train = df_train.ix[:,:-2]
+label_train = df_train.ix[:,-2]
 
 print('Fitting model to predict question statements ...')
 clf = RandomForestClassifier()
@@ -82,8 +84,8 @@ clf.fit(features_train, label_train)
 
 predicted_label_train = clf.predict(features_train)
 
-features_test = df_test.ix[:,:-1]
-label_test = df_test.ix[:,-1]
+features_test = df_test.ix[:,:-2]
+label_test = df_test.ix[:,-2]
 
 print('Predicting question statement labels ... ')
 predicted_label_test = clf.predict(features_test)
@@ -103,5 +105,17 @@ print('Test scores ---------------------------------------')
 print(classification_report(label_test, predicted_label_test))
 print('accuracy score: ', accuracy_test)
 
+
 # save model to disk
 joblib.dump(clf, '../jiak_models/question_model.pkl', compress=9)
+predicted_label_df = pd.Series(predicted_label_test, name="predicted")
+predicted_label_df = predicted_label_df.reset_index(drop=True)
+df_test = df_test.reset_index(drop=True)
+
+import csv
+
+output = pd.concat([df_test, predicted_label_df], axis=1)
+
+output = output.iloc[:,[-3,-1,-2]]
+output.to_csv('output.csv', quoting=csv.QUOTE_ALL,sep='|')
+
