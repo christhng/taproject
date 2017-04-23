@@ -1,5 +1,7 @@
 # Text Analytics Repo
 
+* An academic project for text analytics.
+
 ## Directories Summary
 
 *Lets rock*
@@ -13,14 +15,3 @@
 * **docs** - For presentations in html5
 * **references** - cheatsheets and references
 * **report** - proposal and report in md format
-
-## Task List
-
-1. parser (kah ling)
-2. responder (thomas)
-3. retriever (chris)
-4. state_machine (wesley)
-5. integration (jq)
-6. database prep / statement-response pairs (brij)                        
-7. proposal (all)
-8. report (all)
